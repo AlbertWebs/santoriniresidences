@@ -8,4 +8,40 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-brand-50: #f5f7fa;
+    --color-brand-100: #ebeef3;
+    --color-brand-200: #d9dfe8;
+    --color-brand-500: #52607a;
+    --color-brand-700: #30384a;
+    --color-brand-900: #171c27;
+    --color-accent-500: #b9975b;
+    --shadow-glass: 0 10px 30px rgba(12, 17, 29, 0.08);
+}
+
+@layer base {
+    body {
+        @apply bg-neutral-50 text-neutral-900 antialiased;
+    }
+}
+
+@layer components {
+    .admin-card {
+        @apply rounded-2xl border border-neutral-200 bg-white shadow-sm;
+    }
+
+    .admin-input {
+        @apply w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400 transition focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-200;
+    }
+
+    .admin-label {
+        @apply mb-1.5 block text-sm font-medium text-neutral-700;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-xl bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-700;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50;
+    }
 }
