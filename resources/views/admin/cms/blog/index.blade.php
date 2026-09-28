@@ -24,7 +24,7 @@
                         @foreach ([
                             ['title' => 'Q3 Off-Plan Market Outlook: Mediterranean Coast', 'category' => 'Market Trends', 'status' => 'Published', 'statusStyle' => 'bg-emerald-100 text-emerald-700', 'date' => 'Jul 12, 2026'],
                             ['title' => 'Aegean Crown: Structural Milestone Reached', 'category' => 'Construction Update', 'status' => 'Published', 'statusStyle' => 'bg-emerald-100 text-emerald-700', 'date' => 'Jul 8, 2026'],
-                            ['title' => 'Escrow Compliance Changes for 2026', 'category' => 'Investor Guide', 'status' => 'Draft', 'statusStyle' => 'bg-amber-100 text-amber-800', 'date' => '—'],
+                            ['title' => 'Escrow Compliance Changes for 2026', 'category' => 'Investor Guide', 'status' => 'Draft', 'statusStyle' => 'bg-amber-100 text-amber-800', 'date' => '-'],
                         ] as $article)
                             <tr class="hover:bg-neutral-50/60">
                                 <td class="px-5 py-4 font-medium text-neutral-900">{{ $article['title'] }}</td>

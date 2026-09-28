@@ -1,196 +1,164 @@
-@props(['title' => 'Admin Overview'])
+@props(['title' => 'Content studio', 'kicker' => null])
 
+@php
+    $newLeads = \App\Models\Lead::where('status', 'new')->count();
+    $upcomingVisits = \App\Models\Lead::whereIn('form_type', ['book-visit', 'schedule-visit'])->whereIn('status', ['new', 'contacted', 'visit_scheduled'])->count();
+    $flash = array_values(array_filter([
+        session('status') ? ['message' => session('status'), 'type' => 'success'] : null,
+        session('error') ? ['message' => session('error'), 'type' => 'error'] : null,
+    ]));
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} | {{ config('app.name', 'Santorini Residences') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="cms-base" content="{{ rtrim(asset(''), '/') }}">
+    <title>{{ $title }} | Santorini CMS</title>
+    @include('partials.favicons')
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=cormorant-garamond:500,600|outfit:300,400,500" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/css/admin.css', 'resources/js/admin.js'])
+    @stack('head')
 </head>
-<body class="min-h-screen bg-neutral-50 text-neutral-900" x-data="{ sidebarOpen: false }">
+<body class="adm min-h-screen antialiased" x-data="{ sidebarOpen: false }" x-init="$store.toasts.flash(@js($flash))">
     <div class="flex min-h-screen">
-        <aside class="fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-neutral-200 bg-white/95 backdrop-blur-lg lg:translate-x-0"
+        <div x-show="sidebarOpen" x-cloak x-transition.opacity class="fixed inset-0 z-30 bg-[#07152a]/50 lg:hidden" @click="sidebarOpen = false"></div>
+
+        <aside class="adm-sidebar fixed inset-y-0 left-0 z-40 flex w-72 flex-col transition-transform duration-500 lg:translate-x-0"
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
-            <div class="flex items-center gap-3 px-5 py-6">
-                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-900 text-white">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                        <path d="M4 20V9l8-5 8 5v11h-5v-6H9v6H4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-sm font-semibold tracking-wide text-neutral-900">Santorini Admin</p>
-                    <p class="text-xs text-neutral-500">Off-Plan Settlement</p>
+            <div class="adm-sidebar__brand px-7 pb-7 pt-8">
+                <a href="{{ route('admin.website.index') }}" class="block" aria-label="Santorini CMS home">
+                    <img src="{{ asset('media/logo-santorini.png') }}" alt="Santorini Residences" class="adm-sidebar__logo">
+                </a>
+                <div class="mt-5 flex items-center gap-3">
+                    @include('partials.wave-mark')
+                    <span class="adm-kicker">Content studio</span>
                 </div>
             </div>
 
-            <nav class="flex-1 space-y-0.5 overflow-y-auto px-3 pb-6">
-                <x-admin.nav-section title="Operational Data" />
+            <nav class="flex-1 overflow-y-auto px-4 pb-8" aria-label="Administration">
+                <x-admin.nav-section title="Website" />
+                <x-admin.nav-link href="{{ route('admin.website.index') }}" :active="request()->routeIs('admin.website.index') || (request()->routeIs('admin.website.edit') && request()->route('page') !== 'settings')">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.4"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></x-slot:icon>
+                    Pages
+                </x-admin.nav-link>
+                <x-admin.nav-link href="{{ route('admin.website.edit', 'settings') }}" :active="request()->routeIs('admin.website.edit') && request()->route('page') === 'settings'">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></x-slot:icon>
+                    Global settings
+                </x-admin.nav-link>
+                <x-admin.nav-link href="{{ route('admin.media.index') }}" :active="request()->routeIs('admin.media.*')">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" stroke="currentColor" stroke-width="1.4"/><path d="m3 16 5-5 4 4 3-3 6 6" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="15.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.4"/></svg></x-slot:icon>
+                    Media library
+                </x-admin.nav-link>
 
+                <x-admin.nav-section title="Leads" />
+                <x-admin.nav-link href="{{ route('admin.leads.index') }}" :active="request()->routeIs('admin.leads.index', 'admin.leads.show')" :badge="$newLeads ?: null">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3 7l9 6 9-6M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
+                    All leads
+                </x-admin.nav-link>
+                <x-admin.nav-link href="{{ route('admin.leads.visits') }}" :active="request()->routeIs('admin.leads.visits')" :badge="$upcomingVisits ?: null">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M8 2.5v3M16 2.5v3M3.5 9h17M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M8 13h3M8 16.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></x-slot:icon>
+                    Site visits
+                </x-admin.nav-link>
+
+                <x-admin.nav-section title="Forms & funnels" />
+                <x-admin.nav-link href="{{ route('admin.forms.index') }}" :active="request()->routeIs('admin.forms.*')">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.4"/><path d="M8 8.5h8M8 12h8M8 15.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></x-slot:icon>
+                    Lead forms
+                </x-admin.nav-link>
+                <x-admin.nav-link href="{{ route('admin.funnels.index') }}" :active="request()->routeIs('admin.funnels.*')">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3.5 4.5h17l-6.5 8v6l-4 2v-8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
+                    Social funnels
+                </x-admin.nav-link>
+
+                <x-admin.nav-section title="Operations" />
                 <x-admin.nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M3 12h8V3H3v9Zm0 9h8v-7H3v7Zm10 0h8v-9h-8v9Zm0-18v7h8V3h-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3.5 12.5h7v-9h-7zM3.5 20.5h7v-5h-7zM13.5 20.5h7v-9h-7zM13.5 3.5v5h7v-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
                     Dashboard
                 </x-admin.nav-link>
-
                 <x-admin.nav-link href="{{ route('admin.projects.create') }}" :active="request()->routeIs('admin.projects.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    Housing Projects
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></x-slot:icon>
+                    Housing projects
                 </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.projects.create') }}" :active="request()->routeIs('admin.units.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M5 20h14M7 20v-7h10v7M6 13l6-9 6 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    Property Units
-                </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.projects.create') }}" :active="request()->routeIs('admin.media.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="18" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    </x-slot:icon>
-                    Content Media
-                </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.payments.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 15h.01M11 15h6M5 5h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </x-slot:icon>
-                    Settle & Payments
-                </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.users.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm14 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    User Management
-                </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.settings.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </x-slot:icon>
-                    Settings
-                </x-admin.nav-link>
-
-                <x-admin.nav-section title="Website CMS" />
-
-                <x-admin.nav-link href="{{ route('admin.cms.pages.index') }}" :active="request()->routeIs('admin.cms.pages.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </x-slot:icon>
-                    Pages Manager
-                </x-admin.nav-link>
-
                 <x-admin.nav-link href="{{ route('admin.cms.blog.index') }}" :active="request()->routeIs('admin.cms.blog.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h10M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M17 8l3 3-6 6H11v-3l6-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    Blog / Market Insights
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h9M4 19h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M17 8.5l3 3-5 5h-3v-3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
+                    Market insights
                 </x-admin.nav-link>
-
                 <x-admin.nav-link href="{{ route('admin.cms.testimonials.index') }}" :active="request()->routeIs('admin.cms.testimonials.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M8 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM16 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4 20v-1a4 4 0 0 1 4-4h0M16 15a4 4 0 0 1 4 4v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 14h8l1 6H7l1-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    Testimonials & Press
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M5 6h14v10H9l-4 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
+                    Testimonials &amp; press
                 </x-admin.nav-link>
-
-                <x-admin.nav-section title="Lead & Sales Pipeline" />
-
-                <x-admin.nav-link href="{{ route('admin.leads.inquiries') }}" :active="request()->routeIs('admin.leads.inquiries')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M3 8l9 6 9-6M4 6h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                    </x-slot:icon>
-                    Inquiries & Leads
-                </x-admin.nav-link>
-
-                <x-admin.nav-link href="{{ route('admin.leads.site-visits') }}" :active="request()->routeIs('admin.leads.site-visits')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M8 2v3M16 2v3M3 9h18M5 5h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 13h4M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </x-slot:icon>
-                    Site Visit Scheduler
-                </x-admin.nav-link>
-
-                <x-admin.nav-section title="Legal & Documentation" />
-
                 <x-admin.nav-link href="{{ route('admin.legal.documents') }}" :active="request()->routeIs('admin.legal.*')">
-                    <x-slot:icon>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v5h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </x-slot:icon>
-                    Document Vault
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6M10 17h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></x-slot:icon>
+                    Document vault
+                </x-admin.nav-link>
+                <x-admin.nav-link href="{{ route('admin.settings.index') }}" :active="request()->routeIs('admin.settings.*')">
+                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="16" cy="7" r="2" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="17" r="2" stroke="currentColor" stroke-width="1.4"/></svg></x-slot:icon>
+                    System settings
                 </x-admin.nav-link>
             </nav>
+
+            <div class="border-t border-[#bca869]/20 px-7 py-5">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center border border-[#bca869]/50 font-serif text-lg text-[#e3c992]">{{ \Illuminate\Support\Str::substr(auth()->user()?->name ?? 'S', 0, 1) }}</span>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm text-[#f4f5f6]">{{ auth()->user()?->name }}</p>
+                        <p class="truncate text-xs text-[#e8e9ea]/50">{{ auth()->user()?->email }}</p>
+                    </div>
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button type="submit" class="flex h-8 w-8 items-center justify-center text-[#e8e9ea]/60 transition hover:text-[#e3c992]" title="Sign out" aria-label="Sign out">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </aside>
 
-        <div class="flex min-h-screen flex-1 flex-col lg:pl-72">
-            <header class="sticky top-0 z-30 border-b border-white/50 bg-white/70 px-4 py-3 backdrop-blur-xl lg:px-8">
-                <div class="flex items-center justify-between rounded-2xl border border-neutral-200/80 bg-white/70 px-4 py-3 shadow-[0_10px_30px_rgba(12,17,29,0.08)]">
-                    <div class="flex items-center gap-3">
-                        <button class="rounded-lg border border-neutral-200 p-2 text-neutral-600 lg:hidden" @click="sidebarOpen = !sidebarOpen">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div class="flex min-h-screen min-w-0 flex-1 flex-col lg:pl-72">
+            <header class="adm-topbar sticky top-0 z-20">
+                <div class="flex items-center justify-between gap-4 px-5 py-4 lg:px-10">
+                    <div class="flex min-w-0 items-center gap-4">
+                        <button class="adm-icon-btn lg:hidden" @click="sidebarOpen = true" aria-label="Open navigation">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 17h16" stroke="currentColor" stroke-width="1.4"/></svg>
                         </button>
-                        <div>
-                            <h1 class="text-base font-semibold text-neutral-900">{{ $title }}</h1>
-                            <p class="text-xs text-neutral-500">Luxury off-plan sales operations</p>
+                        <div class="min-w-0">
+                            <p class="adm-kicker">{{ $kicker ?? 'Santorini Residences' }}</p>
+                            <h1 class="adm-title mt-1 truncate text-[1.7rem]">{{ $title }}</h1>
                         </div>
                     </div>
-                    <div class="relative flex items-center gap-3" x-data="{ open: false }">
-                        <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
-                            <svg class="h-4 w-4 text-neutral-500" viewBox="0 0 24 24" fill="none"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span class="hidden sm:inline">Visit Website</span>
+                    <div class="flex shrink-0 items-center gap-3">
+                        {{ $actions ?? '' }}
+                        <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer" class="adm-btn adm-btn--ghost adm-btn--sm hidden sm:inline-flex">
+                            View website
+                            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none"><path d="M9 5h10v10M19 5 5 19" stroke="currentColor" stroke-width="1.6"/></svg>
                         </a>
-                        <button class="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">Export</button>
-                        <button
-                            class="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-2 py-1.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50"
-                            @click.stop="open = !open"
-                            :aria-expanded="open.toString()"
-                            aria-haspopup="true"
-                        >
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-xs font-semibold">SR</span>
-                            <span class="hidden sm:block">Admin</span>
-                            <svg class="h-4 w-4 text-neutral-500 transition" :class="open ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-
-                        <div
-                            x-show="open"
-                            x-transition
-                            @click.outside="open = false"
-                            @click.stop
-                            class="absolute right-0 top-[3.25rem] z-[70] w-64 overflow-hidden rounded-xl border border-neutral-200 bg-white py-2 shadow-xl"
-                            style="display: none;"
-                        >
-                            <div class="border-b border-neutral-100 px-4 py-2">
-                                <p class="text-sm font-semibold text-neutral-900">Santorini Admin</p>
-                                <p class="text-xs text-neutral-500">admin@santoriniresidences.com</p>
-                            </div>
-                            <a href="{{ route('admin.profile') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 transition hover:bg-neutral-50">
-                                <svg class="h-4 w-4 text-neutral-500" viewBox="0 0 24 24" fill="none"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10ZM3 21a9 9 0 0 1 18 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                                Profile
-                            </a>
-                            <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 transition hover:bg-neutral-50">
-                                <svg class="h-4 w-4 text-neutral-500" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                                Settings
-                            </a>
-                            <a href="{{ route('admin.settings.backup') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 transition hover:bg-neutral-50">
-                                <svg class="h-4 w-4 text-neutral-500" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                Data Backup
-                            </a>
-                        </div>
                     </div>
                 </div>
             </header>
 
-            <main class="flex-1 px-4 py-6 lg:px-8">
+            <main class="flex-1 px-5 py-8 lg:px-10 lg:py-10">
                 {{ $slot }}
             </main>
         </div>
     </div>
+
+    <div class="adm-toasts" aria-live="polite">
+        <template x-for="toast in $store.toasts.items" :key="toast.id">
+            <div class="adm-toast" :class="toast.type === 'error' && 'adm-toast--error'" x-transition.opacity.duration.300ms>
+                <span class="adm-toast__mark"></span>
+                <p class="flex-1" x-text="toast.message"></p>
+                <button type="button" class="text-[#e8e9ea]/50 hover:text-[#e8e9ea]" @click="$store.toasts.dismiss(toast.id)" aria-label="Dismiss">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.6"/></svg>
+                </button>
+            </div>
+        </template>
+    </div>
+
+    @include('admin.partials.media-picker')
+    @stack('scripts')
 </body>
 </html>

@@ -1,135 +1,180 @@
-<x-layouts.admin title="Document Vault">
-    <div class="space-y-6" x-data="documentVault()">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h2 class="text-lg font-semibold text-neutral-900">Document Vault</h2>
-                <p class="text-sm text-neutral-500">Upload, categorize, and link downloadable legal templates for public or authenticated access.</p>
+@php
+    use App\Models\Document;
+    use Illuminate\Support\Number;
+    use Illuminate\Support\Str;
+
+    $reopen = $errors->any() && old('_form') === 'upload';
+@endphp
+
+<x-layouts.admin title="Document vault" kicker="Legal">
+    <x-slot:actions>
+        <button type="button" class="adm-btn adm-btn--sm" @click="$dispatch('open-upload')">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6"/></svg>
+            Upload document
+        </button>
+    </x-slot:actions>
+
+    <div x-data="{ uploading: @js($reopen) }" @open-upload.window="uploading = true">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="adm-stat"><p class="adm-kicker adm-kicker--navy">Documents</p><p class="adm-stat__value">{{ number_format($stats['total']) }}</p></div>
+            <div class="adm-stat"><p class="adm-kicker adm-kicker--navy">Customers with files</p><p class="adm-stat__value">{{ number_format($stats['customers']) }}</p></div>
+            <div class="adm-stat"><p class="adm-kicker adm-kicker--navy">Not yet linked</p><p class="adm-stat__value">{{ number_format($stats['unlinked']) }}</p></div>
+            <div class="adm-stat"><p class="adm-kicker adm-kicker--navy">Storage used</p><p class="adm-stat__value">{{ Number::fileSize($stats['size'], precision: 1) }}</p></div>
+        </div>
+
+        <div class="mt-8 adm-tabs">
+            <a href="{{ route('admin.legal.documents', array_merge($filters, ['category' => null])) }}" @class(['adm-tab', 'is-active' => empty($filters['category'])])>All <span>{{ $stats['total'] }}</span></a>
+            @foreach (Document::CATEGORIES as $value => $label)
+                <a href="{{ route('admin.legal.documents', array_merge($filters, ['category' => $value])) }}" @class(['adm-tab', 'is-active' => ($filters['category'] ?? null) === $value])>{{ $label }} <span>{{ $categoryCounts[$value] ?? 0 }}</span></a>
+            @endforeach
+        </div>
+
+        <form method="GET" class="adm-card mt-5 grid gap-3 p-4 md:grid-cols-[1.6fr_1fr_auto]">
+            @if (! empty($filters['category']))
+                <input type="hidden" name="category" value="{{ $filters['category'] }}">
+            @endif
+            <input type="search" name="q" value="{{ $filters['q'] ?? '' }}" class="adm-input" placeholder="Search by title, file name or customer" aria-label="Search documents">
+            <select name="linked" class="adm-select" aria-label="Customer link">
+                <option value="">Linked and unlinked</option>
+                <option value="linked" @selected(($filters['linked'] ?? '') === 'linked')>Linked to a customer</option>
+                <option value="unlinked" @selected(($filters['linked'] ?? '') === 'unlinked')>Not linked yet</option>
+            </select>
+            <div class="flex gap-2">
+                <button type="submit" class="adm-btn">Filter</button>
+                @if (array_filter($filters))
+                    <a href="{{ route('admin.legal.documents') }}" class="adm-btn adm-btn--ghost">Clear</a>
+                @endif
             </div>
-            <button class="btn-primary" @click="showUpload = true">Upload Document</button>
-        </div>
+        </form>
 
-        <div class="flex flex-wrap gap-2">
-            <template x-for="category in categories" :key="category">
-                <button type="button"
-                    class="rounded-full px-3 py-1.5 text-xs font-medium transition"
-                    :class="activeCategory === category ? 'bg-neutral-900 text-white' : 'border border-neutral-200 text-neutral-600 hover:bg-neutral-50'"
-                    @click="activeCategory = category"
-                    x-text="category">
-                </button>
-            </template>
-        </div>
-
-        <section class="admin-card overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-neutral-200 text-left text-sm">
-                    <thead class="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
+        <div class="adm-card mt-5 overflow-x-auto">
+            @if ($documents->isEmpty())
+                <div class="adm-empty py-20">
+                    <p class="adm-title text-3xl">{{ array_filter($filters) ? 'Nothing matches.' : 'The vault is empty.' }}</p>
+                    <p class="max-w-md">{{ array_filter($filters) ? 'Try a different search or category.' : 'Upload offer letters, sale agreements and payment schedules, then link each one to the customers it belongs to.' }}</p>
+                    @unless (array_filter($filters))
+                        <button type="button" class="adm-btn mt-5" @click="uploading = true">Upload the first document</button>
+                    @endunless
+                </div>
+            @else
+                <table class="adm-table">
+                    <thead>
                         <tr>
-                            <th class="px-5 py-3">Document</th>
-                            <th class="px-5 py-3">Category</th>
-                            <th class="px-5 py-3">Access</th>
-                            <th class="px-5 py-3">Size</th>
-                            <th class="px-5 py-3">Updated</th>
-                            <th class="px-5 py-3">Actions</th>
+                            <th>Document</th>
+                            <th>Category</th>
+                            <th>Customers</th>
+                            <th class="text-right">Size</th>
+                            <th class="text-right">Updated</th>
+                            <th><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-neutral-100 bg-white">
-                        <template x-for="doc in filteredDocuments" :key="doc.id">
-                            <tr class="hover:bg-neutral-50/60">
-                                <td class="px-5 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600">
-                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <tbody>
+                        @foreach ($documents as $document)
+                            <tr>
+                                <td>
+                                    <a href="{{ route('admin.documents.show', $document) }}" class="flex items-center gap-4">
+                                        <span class="adm-filetype adm-filetype--{{ Str::lower($document->extension()) }}">{{ $document->extension() }}</span>
+                                        <span class="min-w-0">
+                                            <span class="block max-w-xs truncate font-serif text-lg leading-tight text-[#161311]">{{ $document->title }}</span>
+                                            <span class="block max-w-xs truncate text-xs text-[#6f675e]">{{ $document->original_name }}</span>
+                                        </span>
+                                    </a>
+                                </td>
+                                <td class="whitespace-nowrap text-sm">{{ $document->categoryLabel() }}</td>
+                                <td>
+                                    @if ($document->leads->isEmpty())
+                                        <span class="text-xs italic text-[#9a9187]">Not linked</span>
+                                    @else
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            @foreach ($document->leads->take(2) as $lead)
+                                                <a href="{{ route('admin.leads.show', $lead) }}" class="adm-chip adm-chip--link" title="{{ $lead->email }}">
+                                                    <span class="adm-chip__initial">{{ Str::upper(Str::substr($lead->name, 0, 1)) }}</span>
+                                                    {{ $lead->name }}
+                                                </a>
+                                            @endforeach
+                                            @if ($document->leads->count() > 2)
+                                                <a href="{{ route('admin.documents.show', $document) }}" class="text-xs text-[#6f675e] hover:text-[#0e1e37]">+{{ $document->leads->count() - 2 }} more</a>
+                                            @endif
                                         </div>
-                                        <span class="font-medium text-neutral-900" x-text="doc.name"></span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap text-right text-sm tabular-nums text-[#6f675e]">{{ $document->humanSize() }}</td>
+                                <td class="whitespace-nowrap text-right text-xs text-[#6f675e]" title="{{ $document->updated_at->format('j F Y, H:i') }}">{{ $document->updated_at->diffForHumans() }}</td>
+                                <td>
+                                    <div class="flex justify-end gap-2">
+                                        @if ($document->previewable())
+                                            <a href="{{ route('admin.documents.download', [$document, 'preview' => 1]) }}" target="_blank" rel="noopener" class="adm-icon-btn" title="Preview" aria-label="Preview {{ $document->title }}">
+                                                <svg viewBox="0 0 24 24" fill="none"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="2.8" stroke="currentColor" stroke-width="1.4"/></svg>
+                                            </a>
+                                        @endif
+                                        <a href="{{ route('admin.documents.download', $document) }}" class="adm-icon-btn" title="Download" aria-label="Download {{ $document->title }}">
+                                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14" stroke="currentColor" stroke-width="1.5"/></svg>
+                                        </a>
+                                        <a href="{{ route('admin.documents.show', $document) }}" class="adm-icon-btn" title="Details and customers" aria-label="Open {{ $document->title }}">
+                                            <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.5"/></svg>
+                                        </a>
                                     </div>
                                 </td>
-                                <td class="px-5 py-4 text-neutral-600" x-text="doc.category"></td>
-                                <td class="px-5 py-4">
-                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium"
-                                        :class="doc.access === 'Public' ? 'bg-sky-100 text-sky-700' : 'bg-violet-100 text-violet-700'"
-                                        x-text="doc.access"></span>
-                                </td>
-                                <td class="px-5 py-4 text-neutral-600" x-text="doc.size"></td>
-                                <td class="px-5 py-4 text-neutral-600" x-text="doc.updated"></td>
-                                <td class="px-5 py-4">
-                                    <button class="text-sm font-medium text-neutral-700 hover:text-neutral-900">Download</button>
-                                </td>
                             </tr>
-                        </template>
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-        </section>
+            @endif
+        </div>
 
-        <div x-show="showUpload" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display: none;">
-            <div class="w-full max-w-lg rounded-2xl border border-neutral-200 bg-white p-6 shadow-2xl">
-                <h3 class="text-lg font-semibold text-neutral-900">Upload Document</h3>
-                <form class="mt-4 space-y-4" @submit.prevent="uploadDocument()">
+        @if ($documents->hasPages())
+            <div class="mt-6">{{ $documents->links() }}</div>
+        @endif
+
+        <div x-show="uploading" x-cloak x-transition.opacity.duration.250ms class="adm-modal" role="dialog" aria-modal="true" aria-labelledby="upload-title"
+            @keydown.escape.window="uploading = false" @click.self="uploading = false">
+            <form method="POST" action="{{ route('admin.documents.store') }}" enctype="multipart/form-data" class="adm-modal__panel adm-modal__panel--narrow"
+                x-data="{ sending: false }" @submit="sending = true">
+                @csrf
+                <input type="hidden" name="_form" value="upload">
+                <div class="flex items-center justify-between gap-6 border-b border-[#e6dfd3] px-7 py-5">
                     <div>
-                        <label class="admin-label">Document Name</label>
-                        <input type="text" class="admin-input" x-model="uploadForm.name" required>
+                        <p class="adm-kicker">Document vault</p>
+                        <h2 id="upload-title" class="adm-title mt-1 text-3xl">Upload a document</h2>
                     </div>
-                    <div class="grid gap-4 md:grid-cols-2">
-                        <div>
-                            <label class="admin-label">Category</label>
-                            <select class="admin-input" x-model="uploadForm.category">
-                                <template x-for="cat in categories.filter(c => c !== 'All')" :key="cat">
-                                    <option :value="cat" x-text="cat"></option>
-                                </template>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="admin-label">Access Level</label>
-                            <select class="admin-input" x-model="uploadForm.access">
-                                <option>Public</option>
-                                <option>Authenticated</option>
-                            </select>
-                        </div>
+                    <button type="button" class="adm-icon-btn" @click="uploading = false" aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.6"/></svg>
+                    </button>
+                </div>
+
+                <div class="min-h-0 flex-1 space-y-6 overflow-y-auto px-7 py-6">
+                    @include('admin.documents.file-field', ['title' => old('title', '')])
+
+                    <div>
+                        <label for="upload-category" class="adm-label">Category</label>
+                        <select id="upload-category" name="category" class="adm-select">
+                            @foreach (Document::CATEGORIES as $value => $label)
+                                <option value="{{ $value }}" @selected(old('category', $filters['category'] ?? 'offer-letter') === $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('category')<p class="adm-error">{{ $message }}</p>@enderror
                     </div>
-                    <label class="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50 px-4 py-8 text-center">
-                        <svg class="mb-2 h-6 w-6 text-neutral-500" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                        <p class="text-sm text-neutral-600">Drop PDF or DOCX file here</p>
-                        <input type="file" class="hidden" accept=".pdf,.doc,.docx">
-                    </label>
-                    <div class="flex justify-end gap-2">
-                        <button type="button" class="btn-secondary" @click="showUpload = false">Cancel</button>
-                        <button type="submit" class="btn-primary">Upload</button>
+
+                    @include('admin.documents.customer-picker', [
+                        'selected' => $reopen ? \App\Models\Lead::whereIn('id', (array) old('lead_ids', []))->get() : [],
+                        'id' => 'upload-customers',
+                    ])
+                    @error('lead_ids.*')<p class="adm-error">{{ $message }}</p>@enderror
+
+                    <div>
+                        <label for="upload-notes" class="adm-label">Private notes <small>Optional</small></label>
+                        <textarea id="upload-notes" name="notes" rows="3" class="adm-textarea" placeholder="Version, signatory, anything the team should know">{{ old('notes') }}</textarea>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-4 border-t border-[#e6dfd3] bg-white px-7 py-4">
+                    <p class="text-xs text-[#6f675e]">Stored privately. Only signed-in staff and linked customers can open it.</p>
+                    <div class="flex shrink-0 gap-3">
+                        <button type="button" class="adm-btn adm-btn--ghost" @click="uploading = false">Cancel</button>
+                        <button type="submit" class="adm-btn" :disabled="sending"><span x-text="sending ? 'Uploading' : 'Upload'"></span></button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-
-    <script>
-        function documentVault() {
-            return {
-                showUpload: false,
-                activeCategory: 'All',
-                categories: ['All', 'Offer Letters', 'Sale Agreements', 'Escrow Terms', 'Architectural Blueprints'],
-                uploadForm: { name: '', category: 'Offer Letters', access: 'Public' },
-                documents: [
-                    { id: 1, name: 'Sample Offer Letter Template', category: 'Offer Letters', access: 'Public', size: '245 KB', updated: 'Jul 1, 2026' },
-                    { id: 2, name: 'Standard Sale Agreement v3.2', category: 'Sale Agreements', access: 'Authenticated', size: '1.2 MB', updated: 'Jun 28, 2026' },
-                    { id: 3, name: 'Escrow Terms & Conditions', category: 'Escrow Terms', access: 'Public', size: '380 KB', updated: 'Jun 15, 2026' },
-                    { id: 4, name: 'Aegean Crown Floor Plans', category: 'Architectural Blueprints', access: 'Authenticated', size: '4.8 MB', updated: 'Jul 10, 2026' },
-                ],
-                get filteredDocuments() {
-                    if (this.activeCategory === 'All') return this.documents;
-                    return this.documents.filter((doc) => doc.category === this.activeCategory);
-                },
-                uploadDocument() {
-                    this.documents.unshift({
-                        id: crypto.randomUUID(),
-                        name: this.uploadForm.name,
-                        category: this.uploadForm.category,
-                        access: this.uploadForm.access,
-                        size: '—',
-                        updated: 'Just now',
-                    });
-                    this.showUpload = false;
-                    this.uploadForm = { name: '', category: 'Offer Letters', access: 'Public' };
-                },
-            };
-        }
-    </script>
 </x-layouts.admin>
