@@ -20,7 +20,8 @@ sudo chmod 640 .env
 sudo chmod -R g+rwX storage bootstrap/cache database
 sudo install -d /var/www/santorini-coming-soon
 sudo install -m 644 deploy/under-construction/index.html /var/www/santorini-coming-soon/index.html
-sudo install -m 644 public/media/tower-dusk.webp public/media/logo-santorini.png /var/www/santorini-coming-soon/
+sudo install -m 644 deploy/under-construction/robots.txt deploy/under-construction/sitemap.xml /var/www/santorini-coming-soon/
+sudo install -m 644 public/media/tower-dusk.webp public/media/logo-santorini-enhanced.png /var/www/santorini-coming-soon/
 sudo install -m 644 deploy/nginx.conf /etc/nginx/sites-available/santorini
 sudo ln -s /etc/nginx/sites-available/santorini /etc/nginx/sites-enabled/santorini
 sudo nginx -t

@@ -14,7 +14,7 @@
 <footer class="site-footer">
     <div class="mx-auto grid max-w-[1600px] gap-16 px-5 pb-16 pt-20 md:px-10 lg:grid-cols-12 lg:pb-20 lg:pt-28">
         <div class="lg:col-span-5">
-            <x-img src="media/logo-santorini.png" alt="Santorini Residences" sizes="14rem" :fallback="800" class="brand-mark-footer" />
+            <x-img src="media/logo-santorini-enhanced.png" alt="Santorini Residences" sizes="14rem" :fallback="800" class="brand-mark-footer" />
             <p class="mt-8 max-w-sm font-serif text-2xl leading-snug text-pearl">{{ $brand['tagline'] }}</p>
             <p class="mt-4 max-w-sm text-sm leading-relaxed text-silver/65">{{ $brand['footer_blurb'] }}</p>
 

@@ -7,11 +7,18 @@
     <title>@yield('title', $seo['title'])</title>
     <meta name="description" content="@yield('description', $seo['description'])">
     <meta name="theme-color" content="#161311">
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta name="robots" content="{{ \App\Support\Seo::robots() }}">
+    <meta property="og:site_name" content="Santorini Residences">
+    <meta property="og:locale" content="en_KE">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', $seo['title'])">
+    <meta name="twitter:description" content="@yield('description', $seo['description'])">
+    <meta name="twitter:image" content="@yield('og_image', cms_asset($seo['og_image']))">
+    <link rel="canonical" href="@yield('canonical', \App\Support\Seo::url(request()->path()))">
     <meta property="og:title" content="@yield('title', $seo['title'])">
     <meta property="og:description" content="@yield('description', $seo['description'])">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="@yield('canonical', \App\Support\Seo::url(request()->path()))">
     <meta property="og:image" content="@yield('og_image', cms_asset($seo['og_image']))">
     @include('partials.favicons')
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>

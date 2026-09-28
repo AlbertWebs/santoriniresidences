@@ -15,9 +15,8 @@
     <div class="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 md:h-24 md:px-10">
         <a href="{{ route('home') }}" class="group leading-none" aria-label="Santorini Residences, home">
             <img
-                src="{{ \App\Support\ResponsiveImage::url(($navLocked ?? false) ? 'media/logo-santorini-ink.png' : 'media/logo-santorini.png', 400) }}"
-                :src="(solid || open) ? '{{ \App\Support\ResponsiveImage::url('media/logo-santorini-ink.png', 400) }}' : '{{ \App\Support\ResponsiveImage::url('media/logo-santorini.png', 400) }}'"
-                width="994" height="586"
+                src="{{ \App\Support\ResponsiveImage::url('media/logo-santorini-enhanced.png', 400) }}"
+                width="1634" height="962"
                 alt=""
                 class="brand-mark"
             >

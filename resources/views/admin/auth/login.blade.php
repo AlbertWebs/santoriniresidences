@@ -28,7 +28,7 @@
 
         <main class="flex items-center justify-center bg-[#faf8f4] px-6 py-16 sm:px-12">
             <div class="adm-rise w-full max-w-sm">
-                <img src="{{ asset('media/logo-santorini-ink.png') }}" alt="Santorini Residences" class="h-auto w-40">
+                <img src="{{ asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="h-auto w-40">
                 <span class="adm-rule mt-12"></span>
                 <p class="adm-kicker adm-kicker--navy mt-6">Content management</p>
                 <h1 class="adm-title mt-4 text-5xl">Welcome back.</h1>

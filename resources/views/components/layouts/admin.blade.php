@@ -31,7 +31,7 @@
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
             <div class="adm-sidebar__brand px-7 pb-7 pt-8">
                 <a href="{{ route('admin.website.index') }}" class="block" aria-label="Santorini CMS home">
-                    <img src="{{ asset('media/logo-santorini.png') }}" alt="Santorini Residences" class="adm-sidebar__logo">
+                    <img src="{{ asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="adm-sidebar__logo">
                 </a>
                 <div class="mt-5 flex items-center gap-3">
                     @include('partials.wave-mark')

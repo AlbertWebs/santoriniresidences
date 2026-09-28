@@ -24,8 +24,10 @@
     '@context' => 'https://schema.org',
     '@type' => 'ApartmentComplex',
     'name' => 'Santorini Residences',
+    '@id' => \App\Support\Seo::url().'#residences',
+    'hasMap' => config('location.map_url'),
     'description' => 'A landmark residential development on Lantana Road, Westlands, Nairobi. 328 residences, including 1, 2 and 3-bedroom homes and exclusive loft residences.',
-    'url' => url('/'),
+    'url' => \App\Support\Seo::url(),
     'image' => cms_asset($hero['image']),
     'address' => [
         '@type' => 'PostalAddress',
@@ -367,7 +369,7 @@
             <figure>
                 <div class="map-frame">
                     <div class="map-frame__media">
-                        <iframe title="Map showing {{ $location['place_name'] }}, {{ $location['place_address'] }}" class="h-[440px] w-full md:h-[560px]" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q={{ rawurlencode($location['map_query']) }}&z=15&output=embed"></iframe>
+                        <iframe title="Map showing {{ $location['place_name'] }}, {{ $location['place_address'] }}" class="h-[440px] w-full md:h-[560px]" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" src="{{ config('location.embed_url') }}"></iframe>
                         <span class="map-frame__tint" aria-hidden="true"></span>
                     </div>
                 </div>
@@ -376,7 +378,7 @@
                         <p class="font-serif text-2xl leading-tight text-ink">{{ $location['place_name'] }}</p>
                         <p class="mt-2 text-sm leading-relaxed text-ink/65">{{ $location['place_address'] }}</p>
                     </div>
-                    <a href="https://maps.google.com/?q={{ urlencode($location['map_query']) }}" class="link-navy shrink-0" target="_blank" rel="noopener noreferrer">{{ $location['map_link_label'] }}</a>
+                    <a href="{{ config('location.map_url') }}" class="link-navy shrink-0" target="_blank" rel="noopener noreferrer">{{ $location['map_link_label'] }}</a>
                 </figcaption>
             </figure>
         </div>

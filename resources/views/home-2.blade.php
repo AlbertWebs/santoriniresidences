@@ -307,8 +307,8 @@
             <p class="mt-8 text-sm leading-loose tracking-wide text-stone">Rhapta Road · Riverside · Waiyaki Way · Nairobi CBD · Parklands · Kilimani · Kileleshwa</p>
         </div>
         <div class="lg:col-span-7">
-            <iframe title="Map showing Lantana Road, Westlands, Nairobi, Kenya" class="h-[420px] w-full grayscale" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=Lantana%20Road%20Westlands%20Nairobi%20Kenya&z=15&output=embed"></iframe>
-            <a href="https://maps.google.com/?q=Lantana+Road+Westlands+Nairobi+Kenya" class="link-line mt-4 inline-block text-[0.7rem] tracking-[0.18em] uppercase" target="_blank" rel="noopener noreferrer">Open the map</a>
+            <iframe title="Map showing Lantana Road, Westlands, Nairobi, Kenya" class="h-[420px] w-full grayscale" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" src="{{ config('location.embed_url') }}"></iframe>
+            <a href="{{ config('location.map_url') }}" class="link-line mt-4 inline-block text-[0.7rem] tracking-[0.18em] uppercase" target="_blank" rel="noopener noreferrer">Open the map</a>
         </div>
     </section>
 

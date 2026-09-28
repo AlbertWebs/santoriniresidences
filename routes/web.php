@@ -6,6 +6,12 @@ use App\Http\Controllers\LeadController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
+Route::get('/sitemap.xml', fn () => response()->view('sitemap')->header('Content-Type', 'application/xml'));
+Route::get('/robots.txt', fn () => response(
+    "User-agent: *\nAllow: /\n".(\App\Support\Seo::indexable() ? "Sitemap: ".\App\Support\Seo::url('sitemap.xml')."\n" : ''),
+    200,
+    ['Content-Type' => 'text/plain; charset=UTF-8']
+));
 Route::view('/home-2', 'home-2')->name('home-2');
 Route::view('/residences', 'residences')->name('residences');
 Route::view('/gallery', 'gallery')->name('gallery');

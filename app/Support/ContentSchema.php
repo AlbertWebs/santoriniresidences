@@ -126,7 +126,7 @@ class ContentSchema
                 ], 'name'),
             ]),
             'seo' => self::group('Search and sharing', [
-                'title' => self::text('Default page title', 'Santorini Residences Westlands | Luxury Apartments in Nairobi'),
+                'title' => self::text('Default page title', 'Santorini Residences | Apartments in Westlands, Nairobi'),
                 'description' => self::textarea('Default description', 'Discover Santorini Residences on Lantana Road, Westlands. Premium 1, 2 and 3-bedroom apartments and exclusive loft residences with resort-inspired amenities in Nairobi.'),
                 'og_image' => self::image('Sharing image', 'media/hero-night.webp', 'Used when a page is shared on social media.'),
             ]),
@@ -137,12 +137,12 @@ class ContentSchema
     {
         return [
             'meta' => self::meta(
-                'Santorini Residences Westlands | Luxury Apartments in Nairobi',
+                'Santorini Residences | Apartments in Westlands, Nairobi',
                 'Discover Santorini Residences on Lantana Road, Westlands. Premium 1, 2 and 3-bedroom apartments and exclusive loft residences with resort-inspired amenities in Nairobi.',
             ),
             'hero' => self::group('Hero', [
                 'kicker' => self::text('Kicker', 'Lantana Road, Westlands, Nairobi'),
-                'title' => self::text('Title', 'Santorini', null, true),
+                'title' => self::text('Title', 'Santorini Residences', null, true),
                 'tagline' => self::text('Tagline', 'A new landmark of urban resort living.'),
                 'subline' => self::text('Supporting line', 'Contemporary residences. Distinctive architecture. Resort-inspired living.'),
                 'video' => self::video('Background film', 'media/hero-film-1080.mp4', 'Plays muted on loop behind the hero, starting once the page has loaded. Use a web-optimised MP4 (1080p, ideally under 40 MB).'),
@@ -288,7 +288,6 @@ class ContentSchema
                 'access_label' => self::text('Destinations label', 'Easy access to'),
                 'destinations' => self::lines('Destinations', ['Rhapta Road', 'Riverside', 'Waiyaki Way', 'Nairobi CBD', 'Parklands', 'Kilimani', 'Kileleshwa']),
                 'visit' => self::link('Site visit link', 'Book a site visit', '/book-a-visit'),
-                'map_query' => self::text('Map search', 'Lantana Road Westlands Nairobi Kenya', 'The place searched on the embedded Google map.'),
                 'place_name' => self::text('Place name', 'Santorini Residences'),
                 'place_address' => self::text('Place address', 'Lantana Road, Westlands, Nairobi, Kenya'),
                 'map_link_label' => self::text('Map link label', 'Open in Google Maps'),
@@ -327,7 +326,7 @@ class ContentSchema
     {
         return [
             'meta' => self::meta(
-                'Residences | Santorini Residences Westlands',
+                '1, 2 & 3 Bedroom Apartments | Santorini Residences',
                 'One, two and three-bedroom apartments and 22 loft residences at Santorini, Lantana Road, Westlands. Approximately 64 to 133 square metres, with double-height lofts on the 19th floor.',
             ),
             'hero' => self::group('Hero', [
