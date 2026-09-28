@@ -192,7 +192,73 @@ const heroFilm = () => {
     }
 };
 
+const navSpy = () => {
+    const links = [...document.querySelectorAll('[data-spy]')];
+    const sectionsFor = (link) => link.dataset.spy.split(',');
+    const sections = [...new Set(links.flatMap(sectionsFor))]
+        .map((id) => document.getElementById(id))
+        .filter(Boolean)
+        .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+
+    if (!sections.length) {
+        return;
+    }
+
+    let current;
+    const update = () => {
+        const header = document.querySelector('body > header');
+        const line = (header?.getBoundingClientRect().bottom || 0) + 24;
+        // Keep the preceding section selected through gaps and the closing content.
+        // The first menu item also represents the introduction above its section.
+        let hit = sections[0];
+        for (const section of sections) {
+            if (section.getBoundingClientRect().top > line) {
+                break;
+            }
+            hit = section;
+        }
+        const id = hit.id;
+
+        if (id === current) {
+            return;
+        }
+        current = id;
+
+        links.forEach((link) => {
+            const active = id !== null && sectionsFor(link).includes(id);
+            link.classList.toggle('is-active', active);
+            if (active) {
+                link.setAttribute('aria-current', 'location');
+            } else {
+                link.removeAttribute('aria-current');
+            }
+        });
+    };
+
+    let queued = false;
+    const schedule = () => {
+        if (queued) {
+            return;
+        }
+        queued = true;
+        window.requestAnimationFrame(() => {
+            queued = false;
+            update();
+        });
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    window.addEventListener('pageshow', schedule);
+    window.addEventListener('load', schedule, { once: true });
+    if ('ResizeObserver' in window) {
+        new ResizeObserver(schedule).observe(document.querySelector('main') || document.body);
+    }
+    update();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     reveal();
     heroFilm();
+    navSpy();
 });

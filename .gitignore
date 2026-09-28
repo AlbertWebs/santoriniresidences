@@ -22,6 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+*.pem
+/deploy/*.tar.gz
 
 # Master film (over GitHub's 100 MB limit); the site uses the web encodes in public/media
 /public/content/MAIN PROJECT RENDERS VIDEO.mp4

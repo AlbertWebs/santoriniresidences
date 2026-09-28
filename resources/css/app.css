@@ -806,6 +806,45 @@
     background-size: 100% 1px;
 }
 
+.site-nav-primary .link-line {
+    padding: 0.45rem 0;
+    transition: background-size 480ms ease, opacity 400ms ease;
+}
+
+.link-line.is-active {
+    background-image: linear-gradient(var(--color-gold), var(--color-gold));
+    background-size: 100% 1px;
+}
+
+.site-nav-primary:has(.is-active) .link-line:not(.is-active):not(:hover) {
+    opacity: 0.55;
+}
+
+.mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: color 300ms ease;
+}
+
+.mobile-link::before {
+    content: "";
+    flex: none;
+    width: 0;
+    height: 1px;
+    background: var(--color-champagne);
+    transition: width 400ms ease;
+}
+
+.mobile-link.is-active {
+    color: var(--color-navy);
+    font-style: italic;
+}
+
+.mobile-link.is-active::before {
+    width: 2rem;
+}
+
 .hero-still {
     transform: scale(1.04);
     animation: hero-drift 32s ease-out forwards;
