@@ -794,6 +794,24 @@
     color: #161311;
 }
 
+.home-hero .site-button-on-dark {
+    border-color: rgba(255, 255, 255, 0.58);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 28px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(12px) saturate(135%);
+}
+
+.home-hero .site-button-on-dark:hover {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.menu-toggle {
+    border-color: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+}
+
 .link-line {
     background-image: linear-gradient(currentColor, currentColor);
     background-position: 0 100%;

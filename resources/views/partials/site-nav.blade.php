@@ -11,7 +11,7 @@
     ];
     $isCurrent = fn (array $item) => isset($item['route']) && request()->routeIs($item['route']);
 @endphp
-<header class="fixed inset-x-0 top-0 z-50 transition-colors duration-500" :class="open ? 'bg-paper/95 text-ink backdrop-blur-md' : (solid ? 'bg-navy/60 text-pearl backdrop-blur-md' : 'bg-transparent text-white')">
+<header class="fixed inset-x-0 top-0 z-50 transition-colors duration-500" :class="open ? 'border-b border-ink/10 bg-paper/90 text-ink shadow-lg shadow-ink/5 backdrop-blur-xl' : (solid ? 'border-b border-white/10 bg-navy/40 text-pearl shadow-lg shadow-black/10 backdrop-blur-xl' : 'border-b border-white/0 bg-transparent text-white')">
     <div class="mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 md:h-24 md:px-10">
         <a href="{{ route('home') }}" class="group leading-none" aria-label="Santorini Residences, home">
             <img
@@ -40,7 +40,7 @@
     </div>
 </header>
 
-<div id="mobile-menu" x-show="open" x-cloak x-transition.opacity.duration.400ms class="fixed inset-0 z-40 bg-paper text-ink lg:hidden" @keydown.escape.window="open = false">
+<div id="mobile-menu" x-show="open" x-cloak x-transition.opacity.duration.400ms class="fixed inset-0 z-40 bg-paper/90 text-ink backdrop-blur-xl lg:hidden" @keydown.escape.window="open = false">
     <nav class="flex h-full flex-col justify-end gap-4 overflow-y-auto px-6 pb-12 pt-28" aria-label="Mobile">
         @foreach ($menu as $item)
             <a href="{{ $item['href'] }}" @class(['mobile-link font-serif text-4xl sm:text-5xl', 'is-active' => $isCurrent($item)]) @if ($isCurrent($item)) aria-current="page" @endif @if ($onHome && isset($item['spy'])) data-spy="{{ $item['spy'] }}" @endif @click="open = false">{{ $item['label'] }}</a>
