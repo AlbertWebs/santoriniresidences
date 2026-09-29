@@ -49,25 +49,26 @@
 @endpush
 
 @section('content')
-    <section class="relative min-h-[100svh] bg-ink text-white">
+    <section class="home-hero relative min-h-[100svh] bg-ink text-white">
         <div class="absolute inset-0 overflow-hidden">
             <x-img :src="$hero['image']" :alt="$hero['image_alt']" priority class="hero-still absolute inset-0 h-full w-full object-cover object-[center_42%]" />
             @if ($hero['video'])
                 <video class="hero-film absolute inset-0 h-full w-full object-cover object-center" data-hero-film data-src="{{ cms_asset($hero['video']) }}" @if ($hero['video_mobile'] ?? '') data-src-mobile="{{ cms_asset($hero['video_mobile']) }}" @endif muted loop playsinline preload="none" aria-hidden="true"></video>
             @endif
-            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/30"></div>
+            <div class="absolute inset-0 bg-black/10 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/30"></div>
         </div>
         <div class="relative mx-auto flex min-h-[100svh] w-full min-w-0 max-w-[1600px] flex-col justify-end px-5 pb-12 pt-32 md:px-10 md:pb-16">
             <p class="site-kicker text-white/75">{{ $hero['kicker'] }}</p>
-            <h1 class="site-display mt-6 max-w-5xl text-[18vw] text-white sm:text-8xl md:text-[8.5rem]">{{ $hero['title'] }}</h1>
-            <p class="mt-6 max-w-[15.5rem] font-serif text-2xl leading-snug text-white/90 sm:max-w-xl sm:text-3xl">{{ $hero['tagline'] }}</p>
-            <p class="mt-4 max-w-[15.5rem] text-sm leading-relaxed tracking-wide text-white/75 sm:max-w-lg sm:text-base">{{ $hero['subline'] }}</p>
-            <div class="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+            <h1 class="site-display mt-4 max-w-5xl text-[12vw] text-white sm:mt-6 sm:text-8xl md:text-[8.5rem]">{{ $hero['title'] }}</h1>
+            <p class="mt-6 hidden max-w-[15.5rem] font-serif text-2xl leading-snug text-white/90 sm:block sm:max-w-xl sm:text-3xl">{{ $hero['tagline'] }}</p>
+            <div class="mt-6 flex flex-col items-start gap-5 sm:mt-10 sm:flex-row sm:items-center">
                 <x-cms-link :link="$hero['primary']" class="site-button site-button-on-dark" />
-                <x-cms-link :link="$hero['secondary']" class="link-line text-[0.68rem] tracking-[0.16em] uppercase sm:tracking-[0.2em]" />
+                <div class="hidden sm:block">
+                    <x-cms-link :link="$hero['secondary']" class="link-line text-[0.68rem] tracking-[0.16em] uppercase sm:tracking-[0.2em]" />
+                </div>
             </div>
             @if ($hero['stats'])
-                <dl class="mt-14 grid grid-cols-3 gap-6 border-t border-white/20 pt-6 text-white/80 md:max-w-2xl">
+                <dl class="mt-14 hidden grid-cols-3 gap-6 border-t border-white/20 pt-6 text-white/80 sm:grid md:max-w-2xl">
                     @foreach ($hero['stats'] as $stat)
                         <div>
                             <dt class="site-kicker text-[0.58rem] text-white/55">{{ $stat['label'] }}</dt>
