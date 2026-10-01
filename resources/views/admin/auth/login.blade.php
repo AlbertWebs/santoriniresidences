@@ -13,7 +13,7 @@
 <body class="adm adm-login antialiased">
     <div class="grid min-h-screen lg:grid-cols-[1.15fr_1fr]">
         <div class="relative hidden overflow-hidden lg:block">
-            <img src="{{ asset('media/hero-night.webp') }}" alt="" class="adm-login__still absolute inset-0 h-full w-full object-cover object-[center_42%]">
+            <img src="{{ cms_asset('media/hero-night.webp') }}" alt="" class="adm-login__still absolute inset-0 h-full w-full object-cover object-[center_42%]">
             <div class="absolute inset-0 bg-gradient-to-t from-[#07152a] via-[#07152a]/40 to-[#07152a]/30"></div>
             <span class="adm-login__frame" aria-hidden="true"></span>
             <div class="absolute inset-x-0 bottom-0 p-16">
@@ -28,7 +28,7 @@
 
         <main class="flex items-center justify-center bg-[#faf8f4] px-6 py-16 sm:px-12">
             <div class="adm-rise w-full max-w-sm">
-                <img src="{{ asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="h-auto w-40">
+                <img src="{{ cms_asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="h-auto w-40">
                 <span class="adm-rule mt-12"></span>
                 <p class="adm-kicker adm-kicker--navy mt-6">Content management</p>
                 <h1 class="adm-title mt-4 text-5xl">Welcome back.</h1>
@@ -41,7 +41,10 @@
                     </div>
                     <div>
                         <label for="password" class="adm-label">Password</label>
-                        <input id="password" name="password" type="password" required autocomplete="current-password" class="adm-login__field">
+                        <div class="relative">
+                            <input id="password" name="password" type="password" required autocomplete="current-password" class="adm-login__field pr-16">
+                            <button type="button" data-password-toggle aria-controls="password" aria-label="Show password" aria-pressed="false" class="absolute bottom-3 right-0 px-2 py-1 text-[0.65rem] uppercase tracking-[0.18em] text-[#6f675e] hover:text-[#0e1e37] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0e1e37]">Show</button>
+                        </div>
                     </div>
 
                     @error('email')
@@ -63,5 +66,6 @@
             </div>
         </main>
     </div>
+    @vite('resources/js/admin-login.js')
 </body>
 </html>

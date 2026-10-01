@@ -1,11 +1,11 @@
 <x-layouts.admin title="Data Backup">
     <div class="space-y-6" x-data="backupCenter()">
-        <section class="admin-card p-5">
+        <section class="adm-card p-5">
             <h2 class="text-lg font-semibold text-neutral-900">Data Backup Center</h2>
             <p class="mt-1 text-sm text-neutral-500">Generate snapshots of admin data and download backup archives.</p>
         </section>
 
-        <section class="admin-card p-5">
+        <section class="adm-card overflow-hidden">
             <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <p class="text-sm font-medium text-neutral-900">Manual Backup</p>
@@ -14,8 +14,8 @@
                 <button class="btn-primary" @click="createBackup()">Create Backup</button>
             </div>
 
-            <div class="overflow-x-auto rounded-xl border border-neutral-200">
-                <table class="min-w-full divide-y divide-neutral-200 text-left text-sm">
+            <div class="adm-table-wrap">
+                <table class="adm-table">
                     <thead class="bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
                         <tr>
                             <th class="px-4 py-3">Backup Name</th>
@@ -44,7 +44,7 @@
             </div>
         </section>
 
-        <section class="admin-card p-5">
+        <section class="adm-card p-5">
             <h3 class="text-base font-semibold text-neutral-900">Backup Settings</h3>
             <div class="mt-4 grid gap-5 md:grid-cols-2">
                 <div>

@@ -2,11 +2,11 @@
     $brand = cms('settings.brand');
     $contact = cms('settings.contact');
     $socialLinks = cms('settings.social');
+    $publicTestimonials = \App\Support\TestimonialContent::published();
     $whatsapp = preg_replace('/\D+/', '', (string) $contact['whatsapp']);
     $socialIcons = [
         'instagram' => ['Instagram', '<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>'],
         'facebook' => ['Facebook', '<path fill="currentColor" d="M13.5 21v-7.6h2.6l.4-3h-3V8.5c0-.9.25-1.5 1.5-1.5h1.6V4.3c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21z"/>'],
-        'linkedin' => ['LinkedIn', '<path fill="currentColor" d="M5.2 3.8a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3.5 9.4h3.4V20H3.5zM9.2 9.4h3.3v1.5h.04c.46-.87 1.58-1.78 3.25-1.78 3.47 0 4.11 2.28 4.11 5.25V20h-3.4v-5c0-1.2-.02-2.73-1.66-2.73-1.67 0-1.92 1.3-1.92 2.64V20H9.2z"/>'],
         'youtube' => ['YouTube', '<path fill="currentColor" fill-rule="evenodd" d="M21.6 7.7a2.5 2.5 0 0 0-1.77-1.77C18.27 5.5 12 5.5 12 5.5s-6.27 0-7.83.43A2.5 2.5 0 0 0 2.4 7.7 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.3 2.5 2.5 0 0 0 1.77 1.77c1.56.43 7.83.43 7.83.43s6.27 0 7.83-.43a2.5 2.5 0 0 0 1.77-1.77A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.3zM10 14.9V9.1l5 2.9z"/>'],
         'tiktok' => ['TikTok', '<path fill="currentColor" d="M16.3 5.9A4 4 0 0 1 15.3 3.3h-2.9v11.6a2.43 2.43 0 0 1-2.43 2.34 2.44 2.44 0 0 1-2.44-2.43c0-1.61 1.56-2.82 3.16-2.33V9.53c-3.23-.43-6.06 2.08-6.06 5.29 0 3.12 2.59 5.34 5.33 5.34 2.94 0 5.33-2.39 5.33-5.34V8.92a6.9 6.9 0 0 0 4.03 1.29V7.32s-1.76.08-3.04-1.42z"/>'],
     ];
@@ -18,22 +18,23 @@
             <p class="mt-8 max-w-sm font-serif text-2xl leading-snug text-pearl">{{ $brand['tagline'] }}</p>
             <p class="mt-4 max-w-sm text-sm leading-relaxed text-silver/65">{{ $brand['footer_blurb'] }}</p>
 
-            @if ($contact['email'] || $contact['phone'])
+            @if ($contact['email'] || $contact['phone'] || $contact['phone_secondary'])
                 <ul class="mt-8 space-y-2 text-sm">
                     @if ($contact['email'])
                         <li><a class="footer-link link-line" href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a></li>
                     @endif
-                    @if ($contact['phone'])
-                        <li><a class="footer-link link-line" href="tel:{{ preg_replace('/[^\d+]/', '', $contact['phone']) }}">{{ $contact['phone'] }}</a></li>
-                    @endif
+                    @foreach (array_filter([$contact['phone'], $contact['phone_secondary']]) as $phone)
+                        <li><a class="footer-link link-line" href="tel:{{ preg_replace('/[^\d+]/', '', $phone) }}">{{ $phone }}</a></li>
+                    @endforeach
                 </ul>
             @endif
 
             <ul class="mt-10 flex flex-wrap gap-3" aria-label="Santorini Residences on social media">
                 @foreach ($socialIcons as $key => [$name, $svg])
                     @php($socialUrl = $socialLinks[$key] ?? '')
+                    @continue(! $socialUrl)
                     <li>
-                        <a href="{{ $socialUrl ?: '#' }}" class="social-icon" @if ($socialUrl) target="_blank" rel="noopener noreferrer" @endif aria-label="Santorini Residences on {{ $name }}" title="{{ $name }}">
+                        <a href="{{ $socialUrl }}" class="social-icon" target="_blank" rel="noopener noreferrer" aria-label="Santorini Residences on {{ $name }}" title="{{ $name }}">
                             <svg viewBox="0 0 24 24" aria-hidden="true">{!! $svg !!}</svg>
                         </a>
                     </li>
@@ -55,6 +56,9 @@
                     <li><a class="footer-link link-line" href="{{ route('residences') }}">Residences</a></li>
                     <li><a class="footer-link link-line" href="{{ route('gallery') }}">Gallery</a></li>
                     <li><a class="footer-link link-line" href="{{ route('about') }}">LOVE HOMES</a></li>
+                    <li><a class="footer-link link-line" href="{{ route('insights') }}">Insights</a></li>
+                    <li><a class="footer-link link-line" href="{{ route('privacy') }}">Privacy policy</a></li>
+                    @if ($publicTestimonials)<li><a class="footer-link link-line" href="{{ route('testimonials') }}">Testimonials</a></li>@endif
                     <li><a class="footer-link link-line" href="{{ route('home') }}#location">Location</a></li>
                 </ul>
             </div>

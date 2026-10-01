@@ -58,12 +58,14 @@ class MediaProcessor
             throw new RuntimeException('This image could not be read.');
         }
 
-        $disk = Storage::disk('public');
-        $disk->makeDirectory(Media::UPLOAD_DIRECTORY);
+        $disk = Storage::disk(config('filesystems.media_disk', 'public'));
+        $options = ['ContentType' => $mime, 'CacheControl' => 'public, max-age=31536000, immutable'];
 
         if (! function_exists('imagewebp') || $width * $height > 60_000_000) {
             $name = Media::UPLOAD_DIRECTORY.'/'.Str::random(32).'.'.self::IMAGE_TYPES[$mime];
-            $disk->put($name, fopen($sourcePath, 'rb'));
+            $stream = fopen($sourcePath, 'rb');
+            $disk->put($name, $stream, $options);
+            fclose($stream);
 
             return $this->record($name, $originalName, $mime, $width, $height);
         }
@@ -92,7 +94,7 @@ class MediaProcessor
             imagesavealpha($image, true);
 
             $name = Media::UPLOAD_DIRECTORY.'/'.Str::random(32).'.webp';
-            $target = $disk->path($name);
+            $target = tempnam(sys_get_temp_dir(), 'santorini-image-');
             imagewebp($image, $target, 84);
 
             $finalWidth = imagesx($image);
@@ -102,20 +104,25 @@ class MediaProcessor
             ini_set('memory_limit', $previousLimit);
         }
 
+        try {
+            $stream = fopen($target, 'rb');
+            $disk->put($name, $stream, ['ContentType' => 'image/webp', 'CacheControl' => 'public, max-age=31536000, immutable']);
+            fclose($stream);
+        } finally {
+            @unlink($target);
+        }
+
         return $this->record($name, $originalName, 'image/webp', $finalWidth, $finalHeight);
     }
 
     private function storeVideo(string $sourcePath, string $originalName, int $size): Media
     {
-        $disk = Storage::disk('public');
-        $disk->makeDirectory(Media::UPLOAD_DIRECTORY);
+        $disk = Storage::disk(config('filesystems.media_disk', 'public'));
         $name = Media::UPLOAD_DIRECTORY.'/'.Str::random(32).'.mp4';
 
-        if (! @rename($sourcePath, $disk->path($name))) {
-            $stream = fopen($sourcePath, 'rb');
-            $disk->writeStream($name, $stream);
-            is_resource($stream) && fclose($stream);
-        }
+        $stream = fopen($sourcePath, 'rb');
+        $disk->put($name, $stream, ['ContentType' => 'video/mp4', 'CacheControl' => 'public, max-age=31536000, immutable']);
+        fclose($stream);
 
         return $this->record($name, $originalName, 'video/mp4', null, null);
     }
@@ -128,7 +135,7 @@ class MediaProcessor
             'path' => $path,
             'original_name' => Str::limit($originalName, 180, ''),
             'mime' => $mime,
-            'size' => filesize(Storage::disk('public')->path($name)) ?: 0,
+            'size' => Storage::disk(config('filesystems.media_disk', 'public'))->size($name),
             'width' => $width,
             'height' => $height,
             'alt' => Str::of(pathinfo($originalName, PATHINFO_FILENAME))->replaceMatches('/[_\-]+/', ' ')->squish()->ucfirst()->limit(160, '')->toString(),

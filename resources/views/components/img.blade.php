@@ -9,7 +9,8 @@
         @if ($srcset) srcset="{{ $srcset }}" sizes="{{ $sizes }}" @endif
         alt="{{ $alt }}"
         @if ($dimensions) width="{{ $dimensions[0] }}" height="{{ $dimensions[1] }}" @endif
-        @if ($priority) fetchpriority="high" @else loading="lazy" decoding="async" @endif
+        loading="{{ $priority ? 'eager' : 'lazy' }}" decoding="async"
+        @if ($priority) fetchpriority="high" @endif
         {{ $attributes }}
     >
 @endif

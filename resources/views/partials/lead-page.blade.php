@@ -33,6 +33,13 @@
             @if ($intro['body'])
                 <p class="mt-8 max-w-md text-[0.95rem] leading-[1.85] text-ink/72">{{ $intro['body'] }}</p>
             @endif
+            @if ($form->key === 'general')
+                <ul class="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm" aria-label="Call Santorini Residences">
+                    @foreach (config('site.phones', []) as $phone)
+                        <li><a class="link-navy" href="tel:{{ $phone['tel'] }}">{{ $phone['label'] }}</a></li>
+                    @endforeach
+                </ul>
+            @endif
             @if (! empty($intro['visit']))
                 <x-cms-link :link="$intro['visit']" class="link-gold link-gold--navy mt-8"><span class="link-gold__line" aria-hidden="true"></span></x-cms-link>
             @endif

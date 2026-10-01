@@ -114,7 +114,7 @@ class MediaController extends Controller
     public function destroy(Media $media): JsonResponse
     {
         if ($media->is_upload) {
-            Storage::disk('public')->delete(substr($media->path, strlen('storage/')));
+            Storage::disk(config('filesystems.media_disk', 'public'))->delete(substr($media->path, strlen('storage/')));
             ResponsiveImage::delete($media->path);
         }
 

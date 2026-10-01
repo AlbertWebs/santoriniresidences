@@ -153,6 +153,66 @@ const reveal = () => {
     nodes.forEach((node) => observer.observe(node));
 };
 
+const countUpStats = () => {
+    const groups = document.querySelectorAll('[data-count-group]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!groups.length || reducedMotion || !('IntersectionObserver' in window)) {
+        return;
+    }
+
+    const numberFormat = (decimals) => new Intl.NumberFormat('en', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    });
+
+    const animate = (element, delay) => {
+        const match = element.dataset.countUp.match(/^([^\d]*)([\d,.]+)(\+?)$/);
+        if (!match) {
+            return;
+        }
+
+        const [, prefix, rawValue, suffix] = match;
+        const decimals = rawValue.split('.')[1]?.length || 0;
+        const target = Number(rawValue.replaceAll(',', ''));
+        const format = numberFormat(decimals);
+        const duration = 1650;
+        const start = performance.now() + delay;
+
+        const render = (value) => {
+            element.textContent = `${prefix}${format.format(value)}${suffix}`;
+        };
+
+        const frame = (now) => {
+            const progress = Math.max(0, Math.min(1, (now - start) / duration));
+            const eased = 1 - Math.pow(1 - progress, 4);
+            render(target * eased);
+
+            if (progress < 1) {
+                requestAnimationFrame(frame);
+            }
+        };
+
+        render(0);
+        requestAnimationFrame(frame);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+                return;
+            }
+
+            entry.target.querySelectorAll('[data-count-up]').forEach((value, index) => {
+                animate(value, index * 115);
+            });
+            observer.unobserve(entry.target);
+        });
+    }, { threshold: 0.32, rootMargin: '0px 0px -6% 0px' });
+
+    groups.forEach((group) => observer.observe(group));
+};
+
 const heroFilm = () => {
     const film = document.querySelector('[data-hero-film]');
     if (!film) {
@@ -259,6 +319,7 @@ const navSpy = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     reveal();
+    countUpStats();
     heroFilm();
     navSpy();
 });

@@ -36,7 +36,7 @@
                     <input type="hidden" name="{{ $utm }}" value="{{ \Illuminate\Support\Str::limit((string) request($utm), 120, '') }}">
                 @endif
             @endforeach
-            <div class="absolute -left-[9999px]" aria-hidden="true">
+            <div class="sr-only" aria-hidden="true">
                 <label for="{{ $form->key }}-company">Company</label>
                 <input id="{{ $form->key }}-company" name="company" type="text" tabindex="-1" autocomplete="off">
             </div>
@@ -93,6 +93,19 @@
                 {{ $form->button_label ?: 'Send' }}
                 <svg class="h-3 w-6" viewBox="0 0 28 12" fill="none" aria-hidden="true"><path d="M0 6h26M21 1l5 5-5 5" stroke="currentColor" stroke-width="1"/></svg>
             </button>
+
+            <p class="mt-6 max-w-lg text-xs leading-relaxed text-stone">By submitting this form, you agree that Santorini Residences may use your details to respond to your enquiry. Read our <a class="link-navy underline underline-offset-4" href="{{ route('privacy') }}">Privacy Policy</a>.</p>
+
+            <div class="mt-8 border-t border-limestone pt-6">
+                <p class="site-kicker text-stone">Prefer WhatsApp?</p>
+                <div class="mt-4 flex flex-wrap gap-3">
+                    @foreach (config('site.phones', []) as $phone)
+                        <a href="https://wa.me/{{ ltrim($phone['tel'], '+') }}" target="_blank" rel="noopener noreferrer" class="site-button site-button-navy text-xs">
+                            WhatsApp {{ $phone['label'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
         </form>
     @endif
 </div>

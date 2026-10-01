@@ -5,7 +5,7 @@
 <div x-data="documentFile({ title: @js($title ?? '') })" class="space-y-5">
     <div>
         <label class="adm-dropzone adm-dropzone--compact relative" :class="over && 'is-over'"
-            @dragover.prevent="over = true" @dragleave="over = false" @drop="over = false">
+            @dragover.prevent="over = true" @dragleave.prevent="over = false" @drop.prevent="drop($event)">
             <input type="file" name="file" x-ref="file" accept="{{ $accept }}" @change="pick($event.target.files)" @required($required)
                 class="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label="{{ $required ? 'Choose a file' : 'Replace the file' }}">
             <span class="adm-dropzone__mark">

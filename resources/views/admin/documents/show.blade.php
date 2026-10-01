@@ -101,6 +101,7 @@
                             <option value="{{ $value }}" @selected(old('category', $document->category) === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
+                    @error('category')<p class="adm-error">{{ $message }}</p>@enderror
                 </div>
 
                 @include('admin.documents.customer-picker', [
@@ -111,6 +112,7 @@
                 <div>
                     <label for="notes" class="adm-label">Private notes</label>
                     <textarea id="notes" name="notes" rows="4" class="adm-textarea" placeholder="Version, signatory, anything the team should know">{{ old('notes', $document->notes) }}</textarea>
+                    @error('notes')<p class="adm-error">{{ $message }}</p>@enderror
                 </div>
 
                 <button type="submit" class="adm-btn w-full" :disabled="saving"><span x-text="saving ? 'Saving' : 'Save document'"></span></button>

@@ -7,8 +7,11 @@ use App\Models\Lead;
 use App\Models\LeadForm;
 use App\Support\LeadFormTypes;
 use App\Support\SiteContent;
+use App\Mail\LeadAcknowledgement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -76,7 +79,7 @@ class LeadController extends Controller
 
         $utm = fn (string $key) => Str::limit((string) ($request->input($key) ?: ($attribution[$key] ?? '')), 120, '') ?: null;
 
-        Lead::create(array_merge(array_fill_keys(array_keys($fields), null), $data, [
+        $lead = Lead::create(array_merge(array_fill_keys(array_keys($fields), null), $data, [
             'form_type' => $form->type,
             'lead_form_id' => $form->id,
             'funnel_id' => $funnel?->id,
@@ -97,6 +100,15 @@ class LeadController extends Controller
                 'user_agent' => Str::limit((string) $request->userAgent(), 300, ''),
             ]),
         ]));
+
+        try {
+            Mail::to($lead->email)->send(new LeadAcknowledgement($lead));
+        } catch (\Throwable $exception) {
+            Log::error('Lead acknowledgement email could not be sent.', [
+                'lead_id' => $lead->id,
+                'exception' => $exception::class,
+            ]);
+        }
 
         return $this->received($form);
     }

@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use App\Models\Media;
+use Illuminate\Support\Facades\Storage;
+
 /**
  * Resized WebP copies of library images, stored in a `_w` folder beside the original
  * (media/_w/kitchen-800.webp), so pages can offer the browser a srcset instead of
@@ -74,6 +77,12 @@ class ResponsiveImage
 
         if (! array_key_exists($path, self::$dimensions)) {
             $size = @getimagesize(self::absolute($path));
+
+            if (! $size && config('filesystems.media_disk') === 's3') {
+                $media = Media::query()->where('path', $path)->first(['width', 'height']);
+                $size = $media?->width && $media?->height ? [$media->width, $media->height] : false;
+            }
+
             self::$dimensions[$path] = $size ? [(int) $size[0], (int) $size[1]] : null;
         }
 
@@ -91,11 +100,18 @@ class ResponsiveImage
             return [];
         }
 
+        if (config('filesystems.media_disk') === 's3') {
+            $dimensions = self::dimensions($path);
+            if (! $dimensions || ! function_exists('imagewebp') || $dimensions[0] * $dimensions[1] > 60_000_000) {
+                return [];
+            }
+        }
+
         if (! array_key_exists($path, self::$variants)) {
             $found = [];
             foreach (self::widthsFor(self::dimensions($path)[0] ?? 0) as $width) {
                 $variant = self::variantPath($path, $width);
-                if (is_file(self::absolute($variant))) {
+                if (config('filesystems.media_disk') === 's3' || is_file(self::absolute($variant))) {
                     $found[$width] = $variant;
                 }
             }
@@ -159,7 +175,14 @@ class ResponsiveImage
         }
 
         $source = self::absolute($path);
-        $size = @getimagesize($source);
+        $cloud = config('filesystems.media_disk') === 's3';
+        $sourceContents = null;
+
+        if ($cloud && ! is_file($source)) {
+            $sourceContents = Storage::disk('s3')->get(self::storageKey($path));
+        }
+
+        $size = $sourceContents !== null ? @getimagesizefromstring($sourceContents) : @getimagesize($source);
 
         if (! $size) {
             return 0;
@@ -178,9 +201,9 @@ class ResponsiveImage
 
         try {
             $image = match ($size['mime'] ?? '') {
-                'image/webp' => @imagecreatefromwebp($source),
-                'image/jpeg' => @imagecreatefromjpeg($source),
-                'image/png' => @imagecreatefrompng($source),
+                'image/webp' => $sourceContents !== null ? @imagecreatefromstring($sourceContents) : @imagecreatefromwebp($source),
+                'image/jpeg' => $sourceContents !== null ? @imagecreatefromstring($sourceContents) : @imagecreatefromjpeg($source),
+                'image/png' => $sourceContents !== null ? @imagecreatefromstring($sourceContents) : @imagecreatefrompng($source),
                 default => false,
             };
 
@@ -198,12 +221,24 @@ class ResponsiveImage
                 imagealphablending($resized, false);
                 imagesavealpha($resized, true);
 
-                $destination = self::absolute(self::variantPath($path, $target));
-                if (! is_dir(dirname($destination))) {
-                    mkdir(dirname($destination), 0755, true);
-                }
+                $variantPath = self::variantPath($path, $target);
+                $destination = self::absolute($variantPath);
 
-                imagewebp($resized, $destination, self::QUALITY);
+                if ($cloud) {
+                    ob_start();
+                    imagewebp($resized, null, self::QUALITY);
+                    $encoded = ob_get_clean();
+                    Storage::disk('s3')->put(self::storageKey($variantPath), $encoded, [
+                        'ContentType' => 'image/webp',
+                        'CacheControl' => 'public, max-age=31536000, immutable',
+                    ]);
+                } else {
+                    if (! is_dir(dirname($destination))) {
+                        mkdir(dirname($destination), 0755, true);
+                    }
+
+                    imagewebp($resized, $destination, self::QUALITY);
+                }
                 imagedestroy($resized);
                 $created++;
             }
@@ -220,6 +255,21 @@ class ResponsiveImage
 
     public static function delete(string $path): void
     {
+        if (config('filesystems.media_disk') === 's3') {
+            $disk = Storage::disk('s3');
+            $directory = self::storageKey(dirname(self::variantPath($path, 1)));
+            $stem = self::stem($path);
+
+            foreach ($disk->files($directory) as $variant) {
+                if (preg_match('/^'.preg_quote($stem, '/').'-\\d+\\.webp$/', basename($variant))) {
+                    $disk->delete(self::storageKey($variant));
+                }
+            }
+            unset(self::$variants[$path], self::$dimensions[$path]);
+
+            return;
+        }
+
         $directory = dirname(self::absolute(self::variantPath($path, 1)));
         $pattern = '/^'.preg_quote(self::stem($path), '/').'-\d+\.webp$/';
 
@@ -230,5 +280,12 @@ class ResponsiveImage
         }
 
         unset(self::$variants[$path], self::$dimensions[$path]);
+    }
+
+    private static function storageKey(string $path): string
+    {
+        $path = ltrim($path, '/');
+
+        return str_starts_with($path, 'storage/') ? substr($path, strlen('storage/')) : $path;
     }
 }

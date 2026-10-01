@@ -18,15 +18,19 @@ class DocumentController extends Controller
 {
     public function index(Request $request): View
     {
-        $filters = $request->only(['category', 'q', 'linked']);
+        $filters = $request->validate([
+            'category' => ['nullable', 'string', 'in:'.implode(',', array_keys(Document::CATEGORIES))],
+            'q' => ['nullable', 'string', 'max:120'],
+            'linked' => ['nullable', 'string', 'in:linked,unlinked'],
+        ]);
 
         $documents = Document::query()
             ->with('leads:id,name,email,status')
-            ->when($request->filled('category'), fn ($q) => $q->where('category', $request->input('category')))
-            ->when($request->input('linked') === 'linked', fn ($q) => $q->has('leads'))
-            ->when($request->input('linked') === 'unlinked', fn ($q) => $q->doesntHave('leads'))
-            ->when($request->filled('q'), function ($q) use ($request) {
-                $term = '%'.str_replace(['%', '_'], ['\%', '\_'], $request->input('q')).'%';
+            ->when($filters['category'] ?? null, fn ($q, $category) => $q->where('category', $category))
+            ->when(($filters['linked'] ?? null) === 'linked', fn ($q) => $q->has('leads'))
+            ->when(($filters['linked'] ?? null) === 'unlinked', fn ($q) => $q->doesntHave('leads'))
+            ->when(filled($filters['q'] ?? null), function ($q) use ($filters) {
+                $term = '%'.str_replace(['%', '_'], ['\%', '\_'], $filters['q']).'%';
                 $q->where(fn ($inner) => $inner
                     ->where('title', 'like', $term)
                     ->orWhere('original_name', 'like', $term)

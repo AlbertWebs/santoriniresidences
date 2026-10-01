@@ -644,6 +644,41 @@ Alpine.data('customerPicker', (config = {}) => ({
     },
 }));
 
+Alpine.data('richTextEditor', () => ({
+    html: '',
+
+    sync() {
+        this.html = this.$refs.editor.innerHTML;
+    },
+
+    format(command, value = null) {
+        this.$refs.editor.focus();
+        document.execCommand(command, false, value);
+        this.sync();
+    },
+
+    block(tag) {
+        this.format('formatBlock', `<${tag}>`);
+    },
+
+    addLink() {
+        const value = window.prompt('Enter a web address (https://…)');
+        if (!value) return;
+        let url;
+        try {
+            url = new URL(value, window.location.origin);
+        } catch {
+            Alpine.store('toasts').push('Enter a valid web address.', 'error');
+            return;
+        }
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            Alpine.store('toasts').push('Only web links can be added.', 'error');
+            return;
+        }
+        this.format('createLink', url.href);
+    },
+}));
+
 /* Small helpers */
 
 Alpine.data('copyField', (text) => ({

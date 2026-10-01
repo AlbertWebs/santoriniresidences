@@ -164,6 +164,7 @@
                     <div>
                         <label for="upload-notes" class="adm-label">Private notes <small>Optional</small></label>
                         <textarea id="upload-notes" name="notes" rows="3" class="adm-textarea" placeholder="Version, signatory, anything the team should know">{{ old('notes') }}</textarea>
+                        @error('notes')<p class="adm-error">{{ $message }}</p>@enderror
                     </div>
                 </div>
 

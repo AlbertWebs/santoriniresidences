@@ -16,6 +16,9 @@ Route::view('/home-2', 'home-2')->name('home-2');
 Route::view('/residences', 'residences')->name('residences');
 Route::view('/gallery', 'gallery')->name('gallery');
 Route::view('/about', 'about')->name('about');
+Route::view('/insights', 'insights')->name('insights');
+Route::view('/privacy-policy', 'privacy')->name('privacy');
+Route::get('/testimonials', \App\Http\Controllers\TestimonialController::class)->name('testimonials');
 Route::get('/enquire', [LeadController::class, 'enquire'])->name('enquire');
 Route::get('/book-a-visit', [LeadController::class, 'bookVisit'])->name('visit.book');
 Route::get('/go/{slug}', [FunnelController::class, 'show'])->name('funnel.show');
@@ -69,9 +72,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('funnels', Admin\FunnelController::class)->except('show');
 
         Route::get('/dashboard', Admin\DashboardController::class)->name('dashboard');
-        Route::view('/projects/create', 'admin.projects.create')->name('projects.create');
+        Route::redirect('/projects/create', '/admin/website')->name('projects.create');
         Route::view('/profile', 'admin.profile.index')->name('profile');
-        Route::view('/settings', 'admin.settings.index')->name('settings.index');
+        Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [Admin\SettingsController::class, 'update'])->name('settings.update');
         Route::view('/settings/backup', 'admin.settings.backup')->name('settings.backup');
 
         Route::prefix('cms')->name('cms.')->group(function () {
@@ -80,7 +84,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::view('/pages/services', 'admin.cms.pages.services')->name('pages.services');
             Route::view('/pages/faqs', 'admin.cms.pages.faqs')->name('pages.faqs');
             Route::view('/blog', 'admin.cms.blog.index')->name('blog.index');
-            Route::view('/testimonials', 'admin.cms.testimonials.index')->name('testimonials.index');
+            Route::get('/testimonials', [Admin\TestimonialController::class, 'index'])->name('testimonials.index');
+            Route::put('/testimonials', [Admin\TestimonialController::class, 'update'])->name('testimonials.update');
         });
 
         Route::prefix('leads')->name('leads.')->group(function () {

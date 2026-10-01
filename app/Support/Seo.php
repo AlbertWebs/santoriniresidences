@@ -18,7 +18,9 @@ class Seo
 
     public static function robots(): string
     {
-        return self::indexable() && request()->routeIs('home', 'residences', 'gallery', 'about', 'enquire', 'visit.book')
+        $testimonialsArePublic = request()->routeIs('testimonials') && TestimonialContent::published() !== [];
+
+        return self::indexable() && (request()->routeIs('home', 'residences', 'gallery', 'about', 'insights', 'enquire', 'visit.book') || $testimonialsArePublic)
             ? 'index, follow, max-image-preview:large'
             : 'noindex, nofollow';
     }

@@ -31,7 +31,7 @@
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
             <div class="adm-sidebar__brand px-7 pb-7 pt-8">
                 <a href="{{ route('admin.website.index') }}" class="block" aria-label="Santorini CMS home">
-                    <img src="{{ asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="adm-sidebar__logo">
+                    <img src="{{ cms_asset('media/logo-santorini-enhanced.png') }}" alt="Santorini Residences" class="adm-sidebar__logo">
                 </a>
                 <div class="mt-5 flex items-center gap-3">
                     @include('partials.wave-mark')
@@ -78,10 +78,6 @@
                 <x-admin.nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
                     <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3.5 12.5h7v-9h-7zM3.5 20.5h7v-5h-7zM13.5 20.5h7v-9h-7zM13.5 3.5v5h7v-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>
                     Dashboard
-                </x-admin.nav-link>
-                <x-admin.nav-link href="{{ route('admin.projects.create') }}" :active="request()->routeIs('admin.projects.*')">
-                    <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></x-slot:icon>
-                    Housing projects
                 </x-admin.nav-link>
                 <x-admin.nav-link href="{{ route('admin.cms.blog.index') }}" :active="request()->routeIs('admin.cms.blog.*')">
                     <x-slot:icon><svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h9M4 19h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M17 8.5l3 3-5 5h-3v-3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></x-slot:icon>

@@ -9,6 +9,7 @@ use App\Models\Lead;
 use App\Models\LeadForm;
 use App\Models\Media;
 use App\Support\LeadFormTypes;
+use App\Support\AdminSettings;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -34,7 +35,7 @@ class DashboardController extends Controller
     public function __invoke(Request $request): View
     {
         $range = array_key_exists($request->query('range'), self::RANGES) ? $request->query('range') : '30d';
-        $tz = config('site.timezone', config('app.timezone'));
+        $tz = AdminSettings::all()['timezone'];
         $now = CarbonImmutable::now($tz);
         [$start, $previousStart] = $this->window($range, $now);
 

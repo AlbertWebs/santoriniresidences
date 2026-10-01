@@ -38,7 +38,7 @@
     <section class="home-hero relative min-h-[100svh] bg-ink text-white">
         <div class="absolute inset-0 overflow-hidden">
             <x-img src="media/hero-night.webp" alt="Santorini Residences at night, a curved illuminated tower above the Nairobi skyline." priority class="hero-still absolute inset-0 h-full w-full object-cover object-[center_42%]" />
-            <video class="hero-film absolute inset-0 h-full w-full object-cover object-center" data-hero-film data-src="{{ asset('media/hero-film-1080.mp4') }}" data-src-mobile="{{ asset('media/hero-film-720.mp4') }}" muted loop playsinline preload="none" aria-hidden="true"></video>
+            <video class="hero-film absolute inset-0 h-full w-full object-cover object-center" data-hero-film data-src="{{ cms_asset('media/hero-film-1080.mp4') }}" data-src-mobile="{{ cms_asset('media/hero-film-720.mp4') }}" muted loop playsinline preload="none" aria-hidden="true"></video>
             <div class="absolute inset-0 bg-black/10 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/30"></div>
         </div>
         <div class="relative mx-auto flex min-h-[100svh] w-full min-w-0 max-w-[1600px] flex-col justify-end px-5 pb-12 pt-32 md:px-10 md:pb-16">
@@ -256,7 +256,7 @@
             <div class="border-t border-limestone pt-6">
                 <p class="site-kicker text-stone">Train</p>
                 <h3 class="mt-4 font-serif text-3xl">Fitness centre</h3>
-                <p class="mt-3 text-sm leading-relaxed text-stone">An approximately 600 m² fully equipped studio within the development.</p>
+                <p class="mt-3 text-sm leading-relaxed text-stone">A fully equipped 671.04 m² fitness center on the 20th floor.</p>
             </div>
             <div class="border-t border-limestone pt-6">
                 <p class="site-kicker text-stone">Connect</p>

@@ -68,11 +68,18 @@
                 </div>
             </div>
             @if ($hero['stats'])
-                <dl class="mt-14 hidden grid-cols-3 gap-6 border-t border-white/20 pt-6 text-white/80 sm:grid md:max-w-2xl">
+                <dl class="mt-14 hidden grid-cols-3 gap-6 border-t border-white/20 pt-6 text-white/80 sm:grid md:max-w-2xl" data-count-group>
                     @foreach ($hero['stats'] as $stat)
+                        @php($countable = preg_match('/^(?:[A-Za-z]+\+)?\d[\d,.]*\+?$/', (string) $stat['value']))
                         <div>
                             <dt class="site-kicker text-[0.58rem] text-white/55">{{ $stat['label'] }}</dt>
-                            <dd class="mt-2 font-serif text-3xl md:text-4xl">{{ $stat['value'] }}</dd>
+                            <dd class="mt-2 font-serif text-3xl md:text-4xl">
+                                @if ($countable)
+                                    <span class="count-up-value" data-count-up="{{ $stat['value'] }}" aria-hidden="true">{{ $stat['value'] }}</span><span class="sr-only">{{ $stat['value'] }}</span>
+                                @else
+                                    {{ $stat['value'] }}
+                                @endif
+                            </dd>
                         </div>
                     @endforeach
                 </dl>
@@ -101,11 +108,19 @@
         </div>
 
         @if ($project['facts'])
-            <dl class="mt-24 grid grid-cols-2 gap-x-8 gap-y-14 border-t border-navy pt-12 md:mt-28 md:grid-cols-4 md:gap-x-10" data-reveal>
+            <dl class="mt-24 grid grid-cols-2 gap-x-8 gap-y-14 border-t border-navy pt-12 md:mt-28 md:grid-cols-4 md:gap-x-10" data-reveal data-count-group>
                 @foreach ($project['facts'] as $fact)
+                    @php($countable = preg_match('/^(?:[A-Za-z]+\+)?\d[\d,.]*\+?$/', (string) $fact['value']))
                     <div @class(['md:border-r md:border-navy/12 md:pr-8' => ! $loop->last])>
                         <dt class="site-kicker text-stone">{{ $fact['label'] }}</dt>
-                        <dd class="mt-5 font-serif text-5xl leading-none text-ink md:text-6xl">{{ $fact['value'] }}<span class="fact-unit">{{ $fact['unit'] }}</span></dd>
+                        <dd class="mt-5 font-serif text-5xl leading-none text-ink md:text-6xl">
+                            @if ($countable)
+                                <span class="count-up-value" data-count-up="{{ $fact['value'] }}" aria-hidden="true">{{ $fact['value'] }}</span><span class="sr-only">{{ $fact['value'] }}</span>
+                            @else
+                                {{ $fact['value'] }}
+                            @endif
+                            <span class="fact-unit">{{ $fact['unit'] }}</span>
+                        </dd>
                     </div>
                 @endforeach
             </dl>
@@ -219,8 +234,8 @@
                         <p class="mt-5 font-serif text-xl italic leading-snug text-navy/80">{{ $feature['line'] }}</p>
                     </div>
                     <p class="text-[0.95rem] leading-[1.85] text-ink/72 md:col-span-5 md:col-start-8 md:text-base">{{ $feature['body'] }}</p>
-                    <figure class="distinction__media {{ $mediaLeft ? 'distinction__media--left md:col-start-1' : 'md:col-start-3' }} mt-6 md:col-span-10 md:mt-10">
-                        <x-img :src="$feature['image']" :alt="$feature['alt']" sizes="(min-width: 768px) 84vw, 100vw" class="aspect-[4/3] w-full object-cover sm:aspect-[16/9] md:aspect-[2/1]" />
+                    <figure @class(['distinction__media', 'distinction__media--left md:col-start-1' => $mediaLeft, 'md:col-start-3' => ! $mediaLeft, 'distinction__media--diagram' => $feature['title'] === 'Same-floor drainage', 'mt-6 md:col-span-10 md:mt-10'])>
+                        <x-img :src="$feature['image']" :alt="$feature['alt']" sizes="(min-width: 768px) 84vw, 100vw" @class(['mx-auto h-auto max-h-[82svh] w-auto max-w-full object-contain' => $feature['title'] === 'Same-floor drainage', 'aspect-[4/3] w-full object-cover sm:aspect-[16/9] md:aspect-[2/1]' => $feature['title'] !== 'Same-floor drainage']) />
                     </figure>
                 </article>
             @endforeach
@@ -305,14 +320,20 @@
         </div>
 
         @if ($experience['amenities'])
-            <div class="mx-auto grid max-w-[1600px] gap-10 px-5 py-20 md:grid-cols-3 md:px-10 md:py-28">
-                @foreach ($experience['amenities'] as $amenity)
-                    <div class="border-t border-limestone pt-6">
-                        <p class="site-kicker text-stone">{{ $amenity['kicker'] }}</p>
-                        <h3 class="mt-4 font-serif text-3xl">{{ $amenity['title'] }}</h3>
-                        <p class="mt-3 text-sm leading-relaxed text-stone">{{ $amenity['body'] }}</p>
-                    </div>
-                @endforeach
+            <div class="mx-auto max-w-[1600px] px-5 py-20 md:px-10 md:py-28">
+                <header class="mb-12 max-w-3xl" data-reveal>
+                    <p class="site-kicker text-navy">Spaces to gather, move and unwind</p>
+                    <h2 class="site-display mt-5 text-4xl text-ink md:text-6xl">Everyday life, with room to enjoy it.</h2>
+                </header>
+                <div class="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($experience['amenities'] as $amenity)
+                        <article class="border-t border-limestone pt-6" data-reveal>
+                            <p class="site-kicker text-stone">{{ $amenity['kicker'] }}</p>
+                            <h3 class="mt-4 font-serif text-3xl">{{ $amenity['title'] }}</h3>
+                            <p class="mt-3 text-sm leading-relaxed text-stone">{{ $amenity['body'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
             </div>
         @endif
     </section>

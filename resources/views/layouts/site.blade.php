@@ -2,8 +2,13 @@
 @php($seo = cms('settings.seo'))
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
+    @php($heroMediaUrl = parse_url(cms_asset(cms('home.hero.image'))))
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @if (config('filesystems.media_disk') === 's3' && ! empty($heroMediaUrl['host']))
+        <link rel="preconnect" href="{{ ($heroMediaUrl['scheme'] ?? 'https').'://'.$heroMediaUrl['host'] }}" crossorigin>
+        <link rel="dns-prefetch" href="//{{ $heroMediaUrl['host'] }}">
+    @endif
     <title>@yield('title', $seo['title'])</title>
     <meta name="description" content="@yield('description', $seo['description'])">
     <meta name="theme-color" content="#161311">

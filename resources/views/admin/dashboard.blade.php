@@ -18,7 +18,7 @@
     <div class="space-y-6">
         {{-- Welcome --}}
         <section class="adm-hero adm-rise">
-            <img src="{{ asset('media/tower-dusk.webp') }}" alt="" class="adm-hero__still">
+                <img src="{{ cms_asset('media/tower-dusk.webp') }}" alt="" class="adm-hero__still">
             <span class="adm-hero__frame" aria-hidden="true"></span>
             <div class="relative grid gap-10 p-8 lg:grid-cols-[1.5fr_1fr] lg:items-end lg:p-10">
                 <div>
@@ -241,7 +241,7 @@
                         @endforeach
                         More
                     </div>
-                    <p class="mt-2 text-right text-[0.7rem] text-[#6f675e]">Times shown in {{ str_replace('_', ' ', config('site.timezone')) }}.</p>
+                    <p class="mt-2 text-right text-[0.7rem] text-[#6f675e]">Times shown in {{ str_replace('_', ' ', \App\Support\AdminSettings::all()['timezone']) }}.</p>
                 </div>
             </article>
 

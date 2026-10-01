@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\ContentBlock;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class Cms
 {
@@ -132,6 +133,15 @@ class Cms
 
         if (preg_match('#^(https?:)?//#i', $path)) {
             return $path;
+        }
+
+        if (config('filesystems.media_disk') === 's3') {
+            $key = ltrim($path, '/');
+            if (str_starts_with($key, 'storage/')) {
+                $key = substr($key, strlen('storage/'));
+            }
+
+            return Storage::disk('s3')->url($key);
         }
 
         $encoded = implode('/', array_map('rawurlencode', explode('/', ltrim($path, '/'))));

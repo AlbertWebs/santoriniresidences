@@ -17,7 +17,7 @@
             <img
                 src="{{ \App\Support\ResponsiveImage::url('media/logo-santorini-enhanced.png', 400) }}"
                 width="1634" height="962"
-                alt=""
+                alt="Santorini Residences"
                 class="brand-mark"
             >
         </a>

@@ -24,10 +24,20 @@
 
     <section class="mx-auto max-w-[1100px] px-5 py-28 md:px-10 md:py-40" aria-label="Residence types">
         @foreach (\App\Support\SiteContent::residences() as $home)
+            @if ($home['name'] === 'Type B + X Space')
+                <div class="mb-4 mt-20 border-t border-navy pt-10" data-reveal>
+                    <h2 class="font-serif text-3xl text-ink md:text-4xl">Two-bedroom residences</h2>
+                    <p class="mt-3 site-kicker text-navy">84.60–126.49 m² · 152 units</p>
+                </div>
+            @endif
             <article class="distinction grid gap-x-10 gap-y-8 py-16 md:grid-cols-12 md:py-24" data-reveal>
                 <p class="distinction__index text-5xl md:col-span-2 md:text-6xl" aria-hidden="true">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</p>
                 <div class="md:col-span-5">
-                    <h2 class="font-serif text-5xl leading-none text-ink md:text-[3.4rem]">{{ $home['name'] }}</h2>
+                    @if (str_starts_with($home['name'], 'Type B'))
+                        <h3 class="font-serif text-5xl leading-none text-ink md:text-[3.4rem]">{{ $home['name'] }}</h3>
+                    @else
+                        <h2 class="font-serif text-5xl leading-none text-ink md:text-[3.4rem]">{{ $home['name'] }}</h2>
+                    @endif
                     @if ($home['specs'])
                         <ul class="mt-7 space-y-2.5">
                             @foreach ($home['specs'] as $spec)
@@ -66,6 +76,11 @@
                 </div>
             </article>
         @endforeach
+
+        <div class="mt-12 grid gap-6 border-t border-navy pt-8 text-[0.95rem] leading-relaxed text-ink/75 md:grid-cols-2" data-reveal>
+            <p>Every residence except Type C includes an X Space: a customizable room you can make your own, whether as a study, an extra bedroom or a home office.</p>
+            <p>Every residence includes a designated parking space. Parking spaces are available for purchase.</p>
+        </div>
     </section>
 
     @php($studyLayout = [

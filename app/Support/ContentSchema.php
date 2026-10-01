@@ -103,8 +103,9 @@ class ContentSchema
                 'visit' => self::link('Site visit link', 'Book a site visit', '/book-a-visit', 'Shown in the header and the mobile menu.'),
             ]),
             'contact' => self::group('Contact', [
-                'email' => self::text('Email', '', 'Shown in the footer when set.'),
-                'phone' => self::text('Telephone', '', 'Shown in the footer when set, for example +254 700 000 000.'),
+                'email' => self::text('Email', 'hello@santoriniresidences.com', 'Shown in the footer when set.'),
+                'phone' => self::text('Telephone', '+254 118 666 999', 'Shown in the footer and enquiry contact details.'),
+                'phone_secondary' => self::text('Second telephone', '+254 119 999 333', 'Additional contact number shown in the footer.'),
                 'whatsapp' => self::text('WhatsApp number', '', 'International format, digits only, for example 254700000000. Enables the WhatsApp link in the footer.'),
                 'whatsapp_message' => self::text('WhatsApp opening message', 'Hello, I would like to arrange a visit to Santorini Residences.'),
             ]),
@@ -181,7 +182,7 @@ class ContentSchema
             'landmark' => self::group('02 Designed to be recognised', [
                 'kicker' => self::text('Kicker', 'Designed to be recognised'),
                 'title' => self::text('Headline', 'A building with a signature.', null, true),
-                'image' => self::image('Background image', 'media/tower-sunset.webp'),
+                'image' => self::image('Background image', 'media/tower-sunset-clear.webp'),
                 'image_alt' => self::text('Image description', 'Santorini Residences at sunset, the white curved frame of the tower against a rose sky.'),
                 'lead' => self::textarea('Lead', 'Santorini is conceived as an architectural landmark within Westlands.'),
                 'body' => self::textarea('Body', 'Its twin-tower façade moves away from the conventional straight residential block, introducing flowing curves, expansive glazing, and sculptural aluminium elements. The architectural language draws on the movement of a sail and the flowing curves associated with Santorini itself.'),
@@ -251,14 +252,24 @@ class ContentSchema
                 'relax_title' => self::text('Relax title', 'Sky gardens'),
                 'relax_image' => self::image('Relax image', 'media/sky-lounge.webp'),
                 'relax_alt' => self::text('Relax image description', 'Sky lounge garden at night, with winding paths, seating, and city lights beyond the glass.'),
-                'amenities' => self::repeater('Amenities', [
+                'amenities' => self::repeater('Amenities and areas', [
                     'kicker' => self::text('Kicker'),
                     'title' => self::text('Title'),
                     'body' => self::textarea('Body'),
                 ], [
-                    ['kicker' => 'Train', 'title' => 'Fitness centre', 'body' => 'An approximately 600 m² fully equipped studio within the development.'],
-                    ['kicker' => 'Connect', 'title' => 'Social rooms', 'body' => 'Shared spaces for gathering, recreation, and the ordinary rhythm of the week.'],
-                    ['kicker' => 'Entertain', 'title' => 'Private cinema', 'body' => 'A private cinema and resident facilities for evenings kept inside the house.'],
+                    ['kicker' => '210.47 m² · Arrival', 'title' => 'Hotel-grade entrance lobby', 'body' => 'A generous, welcoming arrival for residents and guests.'],
+                    ['kicker' => '73.44 m² · Residents', 'title' => 'Library', 'body' => 'A quiet space for reading and focused work.'],
+                    ['kicker' => '49.64 m² · Residents', 'title' => 'Cinema', 'body' => 'A dedicated room for private screenings.'],
+                    ['kicker' => '60.59 m² · Residents', 'title' => 'Children’s room', 'body' => 'An indoor space designed for younger residents.'],
+                    ['kicker' => '59.86 m² · Residents', 'title' => 'Entertainment room', 'body' => 'A flexible space for shared activities and gatherings.'],
+                    ['kicker' => '586.37 m² · Ground level', 'title' => 'Landscaped courtyard', 'body' => 'A planted outdoor retreat within the development.'],
+                    ['kicker' => '262.79 m² · 20th floor', 'title' => 'Indoor temperature-controlled swimming pool', 'body' => 'A year-round swimming space above the city.'],
+                    ['kicker' => '223.34 m² · 20th floor roof', 'title' => 'Sky garden', 'body' => 'A planted rooftop garden for time outdoors.'],
+                    ['kicker' => '671.04 m² · 20th floor', 'title' => 'Fitness center', 'body' => 'A fully equipped fitness space for residents.'],
+                    ['kicker' => '597.64 m² · 21st floor', 'title' => 'Sky restaurant and kitchen', 'body' => 'Dining and kitchen facilities with a view across Nairobi.'],
+                    ['kicker' => '589.32 m² · Rooftop', 'title' => 'Rooftop restaurant', 'body' => 'An elevated restaurant for dining above the city.'],
+                    ['kicker' => '601.24 m² · Lower ground level 2', 'title' => 'Supermarket', 'body' => 'A full-service supermarket within the development.'],
+                    ['kicker' => '455.87 m² · Lower ground level 2', 'title' => 'Retail shops', 'body' => 'Retail spaces for everyday services and shopping.'],
                 ], 'title'),
             ], null, '#experience'),
             'ownership' => self::group('Ownership', [
@@ -327,7 +338,7 @@ class ContentSchema
         return [
             'meta' => self::meta(
                 '1, 2 & 3 Bedroom Apartments | Santorini Residences',
-                'One, two and three-bedroom apartments and 22 loft residences at Santorini, Lantana Road, Westlands. Approximately 64 to 133 square metres, with double-height lofts on the 19th floor.',
+                'Explore Type A, B, B1, B2, C and D residences, plus loft homes at Santorini on Lantana Road, Westlands.',
             ),
             'hero' => self::group('Hero', [
                 'kicker' => self::text('Kicker', '328 residences'),
@@ -345,10 +356,13 @@ class ContentSchema
                     'link_label' => self::text('Enquiry link label'),
                     'url' => self::text('Enquiry link'),
                 ], [
-                    ['name' => 'One bedroom', 'specs' => ['Approx. 64 m²'], 'body' => 'Compact, efficient homes suited to young professionals, individuals, couples, first-time buyers, and investors.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=one-bedroom'],
-                    ['name' => 'Two bedroom', 'specs' => ['Approx. 84–130 m²'], 'body' => 'Designed for couples, small families, professionals, and investors, with multiple configurations to match different needs.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
-                    ['name' => 'Three bedroom', 'specs' => ['Approx. 129–133 m²', '32 residences'], 'body' => 'Larger homes for families and owners who want generous, flexible living space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=three-bedroom'],
-                    ['name' => 'Loft residences', 'specs' => ['19th floor', '22 residences', 'Approx. 6-metre ceilings'], 'body' => 'The signature collection. Santorini’s lofts offer a distinctive sense of volume and elevated city living. Buyers choose between two handover configurations.', 'options' => ['Open-volume loft: retains the dramatic double-height space.', 'Full-floor configuration: maximises functional floor area.'], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=loft'],
+                    ['name' => 'Type A + X Space', 'specs' => ['64 m²', '122 units'], 'body' => 'A one-bedroom home with a flexible X Space for study, work or guests.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=one-bedroom'],
+                    ['name' => 'Type B + X Space', 'specs' => ['101.25 m²', '72 units'], 'body' => 'A two-bedroom home with a flexible X Space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
+                    ['name' => 'Type B1 + X Space', 'specs' => ['101.96 m²', '270° arc layout · ensuite', '37 units'], 'body' => 'A two-bedroom home with an ensuite and a flexible X Space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
+                    ['name' => 'Type B2 + X Space', 'specs' => ['Floors 5–7 and 16–18 only', '24 units · 4 per floor', 'Size varies by unit'], 'body' => 'A two-bedroom home with a flexible X Space. Available on selected floors only.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
+                    ['name' => 'Type C', 'specs' => ['20 units · 2 per wing', 'Size varies by unit'], 'body' => 'A two-bedroom home without an X Space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
+                    ['name' => 'Type D + X Space', 'specs' => ['129.10–133.29 m²', '32 residences'], 'body' => 'A three-bedroom home with a flexible X Space and generous room for family life.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=three-bedroom'],
+                    ['name' => 'Loft residences + X Space', 'specs' => ['19th floor', '22 residences', '6-metre ceilings'], 'body' => 'The signature collection offers a distinctive sense of volume and elevated city living. Buyers choose between two handover configurations.', 'options' => ['Open-volume loft: retains the dramatic double-height space.', 'Full-floor configuration: maximises functional floor area.'], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=loft'],
                 ], 'name'),
                 'visit_label' => self::text('Site visit link label', 'Book a site visit', 'Shown beside the enquiry link on every residence.'),
             ], 'Also used for the residence list on the home page.'),
@@ -585,10 +599,10 @@ class ContentSchema
             ['title' => 'Landmark architecture', 'line' => 'Beautiful by design. Functional by purpose.', 'body' => 'Santorini is designed as a distinctive architectural landmark in Westlands, combining sculptural curves, expansive glazing, and contemporary forms to create a recognisable presence on the Nairobi skyline. The architecture is not purely aesthetic. Every element is shaped around the way residents live, work, relax, and experience the city.', 'image' => 'media/tower-front.webp', 'alt' => 'Frontal dusk view of Santorini Residences, a curved twin-tower façade with a pale structural frame and illuminated balconies above a street-level supermarket.'],
             ['title' => 'A signature façade', 'line' => 'Glass and fluorocarbon aluminium, shaped to stand apart.', 'body' => 'The building’s signature façade pairs expansive glass surfaces with sculpted fluorocarbon aluminium panels, creating an identity that shifts with the light throughout the day. The combination delivers a refined exterior while supporting durability, weather resistance, and thermal and acoustic comfort.', 'image' => 'media/facade-curves.webp', 'alt' => 'Street-level view of the curved white balcony lines and glazed podium of Santorini Residences at sunset.'],
             ['title' => 'A true mixed-use address', 'line' => 'Residence, retail, dining, wellness, and leisure in one place.', 'body' => 'Santorini brings residential living, retail, dining, wellness, and leisure together within one integrated development. Residents can reach essential services and lifestyle amenities without leaving the building.', 'image' => 'media/tower-aerial.webp', 'alt' => 'Aerial night view of Santorini Residences, showing the rooftop gardens, pools, and curved tower above the surrounding streets.'],
-            ['title' => 'A full-service supermarket', 'line' => 'Approximately 600 m², with 6-metre ceilings.', 'body' => 'A dedicated, approximately 600 m² fully franchised supermarket brings everyday shopping closer to home. With a 6-metre ceiling height, it is designed to feel spacious and considered, closer to a destination retail experience than a conventional residential convenience store.', 'image' => 'media/supermarket.webp', 'alt' => 'A spacious market interior with high ceilings, produce displays, and wide aisles, conveying the character of the on-site supermarket.'],
+            ['title' => 'A full-service supermarket', 'line' => '601.24 m² on lower ground level 2.', 'body' => 'A dedicated, fully franchised supermarket brings everyday shopping closer to home. With 6-metre ceilings, it is designed to feel spacious and considered, closer to a destination retail experience than a conventional residential convenience store.', 'image' => 'media/supermarket.webp', 'alt' => 'A spacious market interior with high ceilings, produce displays, and wide aisles, conveying the character of the on-site supermarket.'],
             ['title' => 'Dining, sky lounge, and social rooms', 'line' => 'Dine. Gather. Unwind.', 'body' => 'Santorini extends the residential experience into elevated social spaces, including a double-height restaurant and sky lounge for dining, entertaining, and relaxed city living. Hospitality-inspired design meets residential comfort.', 'image' => 'media/sky-dining.webp', 'alt' => 'An open dining terrace at sunset, set among planting with a long table facing the city skyline.'],
-            ['title' => 'A dedicated fitness centre', 'line' => 'Approximately 600 m², fully equipped.', 'body' => 'A dedicated, approximately 600 m² fully equipped fitness centre gives residents a substantial wellness facility within the development, making an active life possible without travelling across the city.', 'image' => '', 'alt' => ''],
-            ['title' => 'Same-floor drainage', 'line' => 'Smarter plumbing. Quieter maintenance.', 'body' => 'Santorini incorporates a same-floor drainage system, keeping drainage services accessible within the relevant floor zone. The approach simplifies maintenance, reduces the disruption traditionally associated with plumbing works, and supports better noise control. It is a feature most residents may never notice, and one they will appreciate over the life of the property.', 'image' => '', 'alt' => ''],
+            ['title' => 'A dedicated fitness center', 'line' => '671.04 m² on the 20th floor.', 'body' => 'A fully equipped fitness center gives residents a substantial wellness facility within the development, making an active life possible without travelling across the city.', 'image' => '', 'alt' => ''],
+            ['title' => 'Same-floor drainage', 'line' => 'Smarter plumbing. Quieter maintenance.', 'body' => 'Santorini incorporates a same-floor drainage system, keeping drainage services accessible within the relevant floor zone. The approach simplifies maintenance, reduces the disruption traditionally associated with plumbing works, and supports better noise control. It is a feature most residents may never notice, and one they will appreciate over the life of the property.', 'image' => 'media/same-floor-drainage.webp', 'alt' => 'Diagram of Santorini’s same-floor drainage system, showing the upper-floor bathroom, floor drain, waterproof layer, sunken bathroom slab, drainage pipes, suspended ceiling, and lower floor.'],
             ['title' => 'High-end management', 'line' => 'A premium product for premium living.', 'body' => 'Santorini is supported by a high-end management approach focused on the quality, functionality, and daily experience of the property, from arrival and shared spaces to amenities, maintenance, and operations. It is built for people who value design, convenience, and the experience of where they live.', 'image' => '', 'alt' => ''],
         ];
     }

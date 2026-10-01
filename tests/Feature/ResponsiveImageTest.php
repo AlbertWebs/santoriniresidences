@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Support\ResponsiveImage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ResponsiveImageTest extends TestCase
@@ -42,6 +43,51 @@ class ResponsiveImageTest extends TestCase
             ResponsiveImage::delete($path);
             @unlink($file);
         }
+    }
+
+    public function test_uploaded_images_and_responsive_variants_can_live_on_s3(): void
+    {
+        Storage::fake('s3');
+        config(['filesystems.media_disk' => 's3']);
+
+        $source = tempnam(sys_get_temp_dir(), 'santorini-source-');
+        $image = imagecreatetruecolor(900, 600);
+        imagepng($image, $source);
+        imagedestroy($image);
+
+        try {
+            $media = app(\App\Support\MediaProcessor::class)->store($source, 'Cloud library image.png');
+            $object = substr($media->path, strlen('storage/'));
+
+            Storage::disk('s3')->assertExists($object);
+            Storage::disk('s3')->assertExists(substr(ResponsiveImage::variantPath($media->path, 400), strlen('storage/')));
+            $this->assertStringContainsString('/'.$object, $media->url);
+            $this->assertStringContainsString('-800.webp 800w', ResponsiveImage::srcset($media->path));
+
+            Storage::disk('s3')->delete($object);
+            ResponsiveImage::delete($media->path);
+        } finally {
+            @unlink($source);
+        }
+    }
+
+    public function test_cloud_media_urls_use_the_santorini_prefix_for_uploaded_files(): void
+    {
+        config([
+            'filesystems.media_disk' => 's3',
+            'filesystems.disks.s3.key' => 'test-key',
+            'filesystems.disks.s3.secret' => 'test-secret',
+            'filesystems.disks.s3.region' => 'eu-north-1',
+            'filesystems.disks.s3.bucket' => 'santorini-media-test',
+            'filesystems.disks.s3.root' => 'santorini-residences',
+            'filesystems.disks.s3.url' => null,
+        ]);
+        Storage::forgetDisk('s3');
+
+        $this->assertSame(
+            'https://santorini-media-test.s3.eu-north-1.amazonaws.com/santorini-residences/cms/example.webp',
+            cms_asset('storage/cms/example.webp'),
+        );
     }
 
     public function test_same_named_images_in_different_formats_do_not_share_variants(): void
