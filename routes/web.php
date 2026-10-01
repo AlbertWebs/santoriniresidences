@@ -15,6 +15,7 @@ Route::get('/robots.txt', fn () => response(
 Route::view('/home-2', 'home-2')->name('home-2');
 Route::view('/residences', 'residences')->name('residences');
 Route::view('/gallery', 'gallery')->name('gallery');
+Route::view('/portfolio', 'portfolio')->name('portfolio');
 Route::view('/about', 'about')->name('about');
 Route::view('/insights', 'insights')->name('insights');
 Route::view('/privacy-policy', 'privacy')->name('privacy');

@@ -100,6 +100,7 @@
                 @if ($background['note'])
                     <p class="mt-10 max-w-lg border-l border-champagne/60 pl-6 text-sm leading-[1.85] text-ink/65">{{ $background['note'] }}</p>
                 @endif
+                <a href="{{ route('portfolio') }}" class="link-navy mt-8 inline-flex">Explore the completed project portfolio <span class="ml-3" aria-hidden="true">→</span></a>
             </div>
         </div>
     </section>

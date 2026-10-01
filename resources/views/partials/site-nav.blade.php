@@ -7,6 +7,7 @@
         ['label' => 'Experience', 'href' => route('home').'#experience', 'spy' => 'experience'],
         ['label' => 'Gallery', 'href' => route('gallery'), 'route' => 'gallery'],
         ['label' => 'The House', 'href' => route('about'), 'route' => 'about'],
+        ['label' => 'Portfolio', 'href' => route('portfolio'), 'route' => 'portfolio'],
         ['label' => 'Location', 'href' => route('home').'#location', 'spy' => 'location', 'mobile' => true],
     ];
     $isCurrent = fn (array $item) => isset($item['route']) && request()->routeIs($item['route']);
