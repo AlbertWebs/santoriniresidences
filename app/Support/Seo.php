@@ -20,7 +20,7 @@ class Seo
     {
         $testimonialsArePublic = request()->routeIs('testimonials') && TestimonialContent::published() !== [];
 
-        return self::indexable() && (request()->routeIs('home', 'residences', 'gallery', 'portfolio', 'about', 'insights', 'enquire', 'visit.book') || $testimonialsArePublic)
+        return self::indexable() && (request()->routeIs('home', 'residences', 'gallery', 'portfolio', 'company-profile', 'about', 'insights', 'enquire', 'visit.book') || $testimonialsArePublic)
             ? 'index, follow, max-image-preview:large'
             : 'noindex, nofollow';
     }

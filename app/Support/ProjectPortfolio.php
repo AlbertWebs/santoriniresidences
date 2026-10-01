@@ -25,6 +25,7 @@ class ProjectPortfolio
                 'projects' => [
                     self::project('Apr 2016 – Jun 2018', 'Qingxiang Yayuan', '清香雅苑', 'Residential', 'Xiongzhou Subdistrict, Liuhe District, Nanjing', '42,898 m²', 'qingxiang-yayuan', 'Landscaped public forecourt at Qingxiang Yayuan.'),
                     self::project('Mar 2017 – Jun 2019', 'Yangguang Hetian Residential Community', '阳光禾田住宅小区', 'Residential · Self-developed', 'Renmin Road, Hongze District, Huai’an', '30,575 m²', 'yangguang-hetian-community', 'Aerial architectural view of Yangguang Hetian Residential Community.'),
+                    self::project('2018', 'Lishui Wuxiang International Pile Foundation Project', '', 'Foundation / Specialist works', 'Lishui, Nanjing', 'Large-scale pile foundations'),
                     self::project('Completed 2019', 'Hetian Fengguang', '禾田风光', 'Residential · Self-developed', 'East of Yanlin River, Hongze District, Huai’an', '4,234 m²', 'hetian-fengguang', 'Evening view of the Hetian Fengguang residential development beside landscaped water.'),
                     self::project('Sep 2018 – Jan 2020', 'Suining Guanghua Phase V Residential Community', '睢宁光华五期住宅小区', 'Residential · Design & build', 'Huanyu West Road, Suining County, Xuzhou', '77,355 m²', 'suining-guanghua-phase-v', 'Residential buildings and green grounds at Suining Guanghua Phase V.'),
                 ],
@@ -53,11 +54,26 @@ class ProjectPortfolio
                     self::project('Oct 2023 – Jul 2025', 'Commercial Kitchen Equipment Manufacturing Facility, Phase II Workshop 2', '年产1500套商用厨房设备制造项目二期厂房二', 'Industrial', 'Nanjing', 'Industrial facility'),
                 ],
             ],
+            [
+                'id' => 'specialist-projects',
+                'period' => 'Infrastructure & specialist works',
+                'note' => 'Additional project examples from the company profile',
+                'projects' => [
+                    self::project('Profile project', 'Nantong Metro Line 2 Diaphragm Wall Construction Works', '', 'Underground infrastructure', 'Nantong, Jiangsu', 'Diaphragm wall construction'),
+                    self::project('Profile project', 'Liuhe Annual-Production Steel Structure Project', '', 'Steel structure / Industrial', 'Liuhe', 'Steel structure works'),
+                    self::project('Profile project', 'Wanxiang Duhui', '', 'Decoration & fit-out', 'Yongle Road, Kazimen, Qinhuai District, Nanjing', 'Approx. 28,450 m²', 'wanxiang-duhui', 'Interior lobby at Wanxiang Duhui, a mixed-use project in Nanjing.'),
+                    self::project('Profile project', 'Nanjing University of Aeronautics and Astronautics Renovation Project', '', 'Institutional / Renovation', 'Nanjing', 'Renovation works', 'nuaa-renovation', 'Landscaped courtyard at the Nanjing University of Aeronautics and Astronautics renovation project.'),
+                    self::project('Profile project', 'Tanggou Brand Operations (Nanjing) Co., Ltd. — Shangshuli No. 48 Operations Center Renovation', '', 'Decoration & fit-out', 'No. 48 Shangshuli, Qinhuai District, Nanjing', 'Approx. 2,648.16 m² · renovation', 'tanggou-shangshuli-48', 'Meeting room within the Shangshuli No. 48 Operations Center renovation.', 'The works included façade refurbishment, equipment procurement and installation, interior upgrading, repairs, landscape, water, strengthening, wall, kitchen and installation works.'),
+                    self::project('Profile project', 'Xianxin Road Project', '', 'Highway subgrade works', '', 'Provincial key road and bridge project', 'xianxin-road', 'Aerial view of the Xianxin Road project and its highway corridor.', 'Works included main-line bridges, Chuhe auxiliary-road bridges, at-grade roads, flood-control compensation works for Chuhe Bridge, subgrade, pavement and ancillary works.'),
+                    self::project('Profile project', 'Leying Steel Structure Factory Building Project', '', 'Steel structure / Industrial', 'No. 9 Wuge Road, Airport Economic Development Zone, Jiangning District, Nanjing', 'Approx. 24,660.70 m²', 'leying-steel-structure-factory', 'Multi-storey steel-frame factory building under construction at the Leying project.', 'The multi-storey factory uses a light-gauge steel exterior-wall system with corrugated metal panels and pile foundations.'),
+                    self::project('Profile project', 'Steel Structure Works for the Aviation Industry Airborne/Airdrop Construction Equipment Project', '', 'Steel structure / Aviation', 'East of Xumutang Road, Lishui Development Zone, Nanjing, Jiangsu', 'Steel structures, canopies and roof purlins', 'aviation-steel-structure-works', 'Architectural rendering of a manufacturing building included in the aviation industry steel structure project.', 'Works included structures and canopies for processing, assembly, delivery, textile and sewing facilities, plus roof purlins for a chemical warehouse.'),
+                ],
+            ],
         ];
     }
 
-    private static function project(string $date, string $name, string $local, string $sector, string $location, string $area, ?string $image = null, ?string $alt = null): array
+    private static function project(string $date, string $name, string $local, string $sector, string $location, string $area, ?string $image = null, ?string $alt = null, ?string $summary = null): array
     {
-        return compact('date', 'name', 'local', 'sector', 'location', 'area', 'image', 'alt');
+        return compact('date', 'name', 'local', 'sector', 'location', 'area', 'image', 'alt', 'summary');
     }
 }

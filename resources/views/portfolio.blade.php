@@ -45,6 +45,7 @@
             <div class="lg:col-span-7 lg:col-start-6" data-reveal>
                 <p class="text-[0.98rem] leading-[1.9] text-ink/75">Founded in 2010 and headquartered in Nanjing, Jiangsu Hetian Construction brings more than fifteen years of experience across residential, commercial, institutional, public and industrial work. Its capabilities span building construction, municipal infrastructure, foundation engineering, steel structures, roadworks, decoration and fit-out.</p>
                 <p class="mt-6 text-[0.98rem] leading-[1.9] text-ink/75">Through its Kenyan subsidiary, Olmaa Lands Limited, the Group is bringing that experience to Nairobi with Santorini Residences, a contemporary mixed-use development on Lantana Road, Westlands.</p>
+                <a href="{{ route('company-profile') }}" class="link-navy mt-8 inline-flex">Read the company profile <span class="ml-3" aria-hidden="true">→</span></a>
 
                 <dl class="mt-12 grid grid-cols-2 gap-x-8 gap-y-8 border-t border-navy/30 pt-8 sm:grid-cols-3">
                     <div>
@@ -113,7 +114,9 @@
                                         <span class="site-kicker text-gold-soft">Project record · {{ str_pad($projectNumber, 2, '0', STR_PAD_LEFT) }}</span>
                                         <span class="pointer-events-none absolute -right-4 top-1/4 font-serif text-[11rem] leading-none text-white/[0.035]" aria-hidden="true">禾</span>
                                         <div class="relative">
-                                            <p lang="zh" class="font-serif text-xl text-gold-soft/80">{{ $project['local'] }}</p>
+                                            @if ($project['local'])
+                                                <p lang="zh" class="font-serif text-xl text-gold-soft/80">{{ $project['local'] }}</p>
+                                            @endif
                                             <p class="mt-4 max-w-lg font-serif text-3xl leading-tight md:text-4xl">{{ $project['name'] }}</p>
                                         </div>
                                         <span class="site-kicker text-pearl/55">{{ $project['sector'] }}</span>
@@ -125,12 +128,19 @@
                                 <div>
                                     <p class="site-kicker text-stone">{{ $project['date'] }} <span class="mx-2 text-champagne">/</span> {{ $project['sector'] }}</p>
                                     <h4 class="mt-3 max-w-2xl font-serif text-2xl leading-tight text-ink md:text-3xl">{{ $project['name'] }}</h4>
-                                    <p lang="zh" class="mt-2 font-serif text-lg text-stone/80">{{ $project['local'] }}</p>
+                                    @if ($project['local'])
+                                        <p lang="zh" class="mt-2 font-serif text-lg text-stone/80">{{ $project['local'] }}</p>
+                                    @endif
                                 </div>
                                 <div class="border-t border-navy/20 pt-3 text-sm leading-relaxed text-stone sm:mt-1 sm:min-w-44 sm:border-t-0 sm:border-l sm:pl-5 sm:pt-0">
-                                    <p>{{ $project['location'] }}</p>
+                                    @if ($project['location'])
+                                        <p>{{ $project['location'] }}</p>
+                                    @endif
                                     <p class="mt-2 text-ink/75">{{ $project['area'] }}</p>
                                 </div>
+                                @if ($project['summary'])
+                                    <p class="max-w-3xl text-sm leading-[1.8] text-ink/70 sm:col-span-2">{{ $project['summary'] }}</p>
+                                @endif
                             </div>
                         </article>
                     @endforeach
@@ -150,6 +160,7 @@
                 <p class="mt-7 max-w-2xl text-base leading-[1.85] text-pearl/70">Discover how this experience is taking shape at Santorini Residences, Lantana Road, Westlands.</p>
             </div>
             <div class="flex flex-wrap items-center gap-x-8 gap-y-5 lg:col-span-4 lg:justify-end" data-reveal>
+                <a href="{{ route('company-profile') }}" class="link-line">Company profile</a>
                 <a href="{{ route('about') }}" class="link-line">Meet the house</a>
                 <a href="{{ route('enquire') }}" class="site-button">Enquire now</a>
             </div>
