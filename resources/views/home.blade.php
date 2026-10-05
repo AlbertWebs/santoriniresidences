@@ -57,18 +57,18 @@
             @endif
             <div class="absolute inset-0 bg-black/10 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/30"></div>
         </div>
-        <div class="relative mx-auto flex min-h-[100svh] w-full min-w-0 max-w-[1600px] flex-col justify-end px-5 pb-12 pt-32 md:px-10 md:pb-16">
+        <div class="relative mx-auto flex min-h-[100svh] w-full min-w-0 max-w-[1600px] flex-col justify-end px-5 pb-8 pt-28 sm:pb-10 md:px-10 md:pb-12">
             <p class="site-kicker text-white/75">{{ $hero['kicker'] }}</p>
-            <h1 class="site-display mt-4 max-w-5xl text-[12vw] text-white sm:mt-6 sm:text-8xl md:text-[8.5rem]">{{ $hero['title'] }}</h1>
-            <p class="mt-6 hidden max-w-[15.5rem] font-serif text-2xl leading-snug text-white/90 sm:block sm:max-w-xl sm:text-3xl">{{ $hero['tagline'] }}</p>
-            <div class="mt-6 flex flex-col items-start gap-5 sm:mt-10 sm:flex-row sm:items-center">
+            <h1 class="site-display mt-4 max-w-5xl text-[11vw] text-white sm:mt-4 sm:text-7xl md:text-[7.5rem]">{{ $hero['title'] }}</h1>
+            <p class="mt-4 hidden max-w-[15.5rem] font-serif text-2xl leading-snug text-white/90 sm:block sm:max-w-xl sm:text-2xl">{{ $hero['tagline'] }}</p>
+            <div class="mt-5 flex flex-col items-start gap-4 sm:mt-7 sm:flex-row sm:items-center">
                 <x-cms-link :link="$hero['primary']" class="site-button site-button-on-dark" />
                 <div class="hidden sm:block">
                     <x-cms-link :link="$hero['secondary']" class="link-line text-[0.68rem] tracking-[0.16em] uppercase sm:tracking-[0.2em]" />
                 </div>
             </div>
             @if ($hero['stats'])
-                <dl class="mt-14 hidden grid-cols-3 gap-6 border-t border-white/20 pt-6 text-white/80 sm:grid md:max-w-2xl" data-count-group>
+                <dl class="mt-10 hidden grid-cols-3 gap-6 border-t border-white/20 pt-5 text-white/80 sm:grid md:max-w-2xl" data-count-group>
                     @foreach ($hero['stats'] as $stat)
                         @php($countable = preg_match('/^(?:[A-Za-z]+\+)?\d[\d,.]*\+?$/', (string) $stat['value']))
                         <div>
