@@ -121,6 +121,15 @@
                             @endif
                             <span class="fact-unit">{{ $fact['unit'] }}</span>
                         </dd>
+                        @if (($fact['label'] ?? '') === 'Homes')
+                            <p class="mt-5 inline-flex items-center gap-2 border border-champagne/70 bg-navy/[0.035] px-3 py-2 text-navy">
+                                <span class="font-serif text-2xl leading-none text-champagne" aria-hidden="true">×</span>
+                                <span class="text-[0.65rem] leading-snug tracking-[0.12em] uppercase">
+                                    <span class="font-semibold">X Space</span>
+                                    <span class="ml-1 block text-[0.58rem] tracking-[0.06em] text-stone">Flexible room in Type A</span>
+                                </span>
+                            </p>
+                        @endif
                     </div>
                 @endforeach
             </dl>
