@@ -356,7 +356,7 @@ class ContentSchema
                     'link_label' => self::text('Enquiry link label'),
                     'url' => self::text('Enquiry link'),
                 ], [
-                    ['name' => 'Type A + X Space', 'specs' => ['64 m²', '122 units'], 'body' => 'A one-bedroom home with a flexible X Space for study, work or guests.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=one-bedroom'],
+                    ['name' => 'Type A + X Space', 'specs' => ['64 m²', '121 units'], 'body' => 'A one-bedroom home with a flexible X Space for study, work or guests.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=one-bedroom'],
                     ['name' => 'Type B + X Space', 'specs' => ['101.25 m²', '72 units'], 'body' => 'A two-bedroom home with a flexible X Space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
                     ['name' => 'Type B1 + X Space', 'specs' => ['101.96 m²', '270° arc layout · ensuite', '37 units'], 'body' => 'A two-bedroom home with an ensuite and a flexible X Space.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
                     ['name' => 'Type B2 + X Space', 'specs' => ['Floors 5–7 and 16–18 only', '24 units · 4 per floor', 'Size varies by unit'], 'body' => 'A two-bedroom home with a flexible X Space. Available on selected floors only.', 'options' => [], 'link_label' => 'Enquire about this residence', 'url' => '/enquire?interest=two-bedroom'],
