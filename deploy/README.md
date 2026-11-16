@@ -1,19 +1,20 @@
-# Server deployment
+# Production deployment
 
-Deployed on 28 September 2026 to `ubuntu@13.50.244.3` using the local PEM key.
+Production runs on `ubuntu@13.50.244.3` at https://santoriniresidences.com.
 
-- Staging: https://staging.santoriniresidences.com
-- Coming soon: https://santoriniresidences.com
-- Laravel directory: `/var/www/santorini-staging`
-- Static page directory: `/var/www/santorini-coming-soon`
+- Laravel directory: `/var/www/santoriniresidences`
 - Nginx configuration: `/etc/nginx/sites-available/santorini`
 - PHP FPM: `/run/php/php8.5-fpm.sock`
-- Database: `/var/www/santorini-staging/database/database.sqlite`
+- Database: `/var/www/santoriniresidences/database/database.sqlite`
+- TLS: Let's Encrypt certificates for the apex and `www` hostnames, with automatic renewal; Cloudflare proxies the public domain. Nginx redirects `www` requests to the apex domain.
+- Lead notification recipient: `info@santoriniresidences.com`
 
-Both domains use a Let's Encrypt certificate managed by Certbot with automatic renewal. Cloudflare proxies the public domains. Staging sends `X-Robots-Tag: noindex, nofollow` and disables debug output.
+The server's `.env` contains the production app key, SMTP credentials, and generated admin password. Never commit or publish it. Before releases, back up `.env`, the SQLite database, and `storage`; preserve them while deploying. Build assets locally with `npm run build`, upload the release, run Composer with `--no-dev`, apply migrations, and refresh Laravel's caches.
 
-The staging admin email is `admin@santoriniresidences.com`. Its generated password is stored as `ADMIN_PASSWORD` in the server's protected `/var/www/santorini-staging/.env`. Retrieve it over SSH when needed; do not commit or publish it. Mail currently uses Laravel's log driver.
+After syncing files, restore production ownership and writable directories before running Composer or Artisan: `sudo chown -R ubuntu:www-data /var/www/santoriniresidences`, `sudo chmod 640 .env`, and `sudo chmod -R g+rwX storage bootstrap/cache database`. In particular, PHP-FPM needs write access to the SQLite database directory to create SQLite journal files.
 
-`install.sh` and `nginx.conf` are the initial provisioning files. Do not rerun them on the installed site: Certbot has since added HTTPS settings to the live Nginx configuration. For subsequent releases, preserve `.env`, the SQLite database, and `storage`; back them up before migrations. Upload updated source and built assets, run Composer with `--no-dev`, apply migrations, and refresh Laravel's caches.
+Do not sync `public/hot` to production. Laravel uses that Vite marker to point pages at a development server instead of the built assets in `public/build`; remove it from production releases if present.
 
-The upload excluded local secrets, development dependencies, local user/lead data, and the unused original master video. Web video encodes and site imagery are included. Default CMS content and forms were seeded on the server.
+`install.sh` and `nginx.conf` are provisioning references, not routine release scripts. Certbot manages the production certificate. The default Nginx virtual host rejects requests for unconfigured hostnames.
+
+Mail uses Amazon SES SMTP. Website inquiries are saved to the database, sent to the configured lead notification recipient, and acknowledged with a branded HTML email and plain-text fallback. Customer replies go to the team. Check Laravel logs for lead notification or acknowledgement send failures if SES delivery fails.

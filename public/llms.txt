@@ -1,0 +1,15 @@
+# Santorini Residences
+
+> Official project website for Santorini Residences, a 328-home residential development on Lantana Road, Westlands, Nairobi, Kenya.
+
+Santorini Residences is developed by Olmaa Lands Limited under the LOVE HOMES brand. The project includes one-bedroom, two-bedroom and three-bedroom residences, as well as loft residences. The official website publishes project information and residence plans. Prices and availability can change; contact the project team for current information.
+
+## Official pages
+
+- [Home](https://santoriniresidences.com/): Project overview and official project identity.
+- [Project facts and FAQs](https://santoriniresidences.com/project-facts): Location, developer, residence types and answers to common questions.
+- [Residences](https://santoriniresidences.com/residences): Residence plans and specifications.
+- [About](https://santoriniresidences.com/about): Background on LOVE HOMES and Olmaa Lands Limited.
+- [Enquire](https://santoriniresidences.com/enquire): Request current prices, availability and project information.
+- [Book a site visit](https://santoriniresidences.com/book-a-visit): Arrange a visit to the project.
+- [XML sitemap](https://santoriniresidences.com/sitemap.xml)

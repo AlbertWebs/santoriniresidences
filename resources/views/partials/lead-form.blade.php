@@ -1,5 +1,10 @@
 @php
     /** @var \App\Models\LeadForm $form */
+    $leadFormToken = \Illuminate\Support\Str::random(64);
+    session()->put('lead_form_tokens.'.$form->key, [
+        'token' => $leadFormToken,
+        'issued_at' => now()->timestamp,
+    ]);
     $fields = $form->activeFields();
     $preset = $preset ?? [];
     $funnel = $funnel ?? null;
@@ -27,6 +32,7 @@
     @else
         <form method="POST" action="{{ $form->key === 'general' ? route('enquire.store') : route('leads.store', $form) }}" class="relative max-w-xl" novalidate>
             @csrf
+            <input type="hidden" name="_lead_form_token" value="{{ $leadFormToken }}">
             <input type="hidden" name="page" value="{{ '/'.ltrim(request()->path(), '/') }}">
             @if ($funnel)
                 <input type="hidden" name="funnel" value="{{ $funnel->slug }}">
@@ -40,6 +46,9 @@
                 <label for="{{ $form->key }}-company">Company</label>
                 <input id="{{ $form->key }}-company" name="company" type="text" tabindex="-1" autocomplete="off">
             </div>
+            @error('spam_protection')
+                <p class="mb-6 rounded border border-dusk/30 bg-dusk/5 p-4 text-sm text-dusk" role="alert">{{ $message }}</p>
+            @enderror
 
             @foreach ($groups as $legend => $groupFields)
                 <fieldset @class(['border-t border-navy pt-8', 'mt-16' => ! $loop->first])>

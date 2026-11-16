@@ -7,11 +7,11 @@ use App\Models\Lead;
 use App\Models\LeadForm;
 use App\Support\LeadFormTypes;
 use App\Support\SiteContent;
-use App\Mail\LeadAcknowledgement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -61,6 +61,12 @@ class LeadController extends Controller
             return $this->received($form);
         }
 
+        if (! app()->environment('testing') && ! $this->validFormToken($request, $form)) {
+            return back()->withErrors([
+                'spam_protection' => 'Please reload the form and try again.',
+            ])->withInput($request->except('_token', '_lead_form_token'));
+        }
+
         $fields = $form->activeFields();
         $rules = [];
         $attributes = [];
@@ -71,6 +77,14 @@ class LeadController extends Controller
         }
 
         $data = $request->validate($rules, [], $attributes);
+
+        $emailKey = 'lead-submission-email:'.hash('sha256', mb_strtolower(trim($data['email'])));
+        if (RateLimiter::tooManyAttempts($emailKey, 5)) {
+            return back()->withErrors([
+                'email' => 'You have sent several requests recently. Please try again later.',
+            ])->withInput($request->except('_token', '_lead_form_token'));
+        }
+        RateLimiter::hit($emailKey, 3600);
 
         $attribution = $request->session()->get('lead_attribution', []);
         $funnel = $request->filled('funnel')
@@ -101,8 +115,42 @@ class LeadController extends Controller
             ]),
         ]));
 
+        $details = collect($data)
+            ->filter(fn ($value) => filled($value))
+            ->map(fn ($value, $key) => ucfirst(str_replace('_', ' ', $key)).":\n".(is_array($value) ? implode(', ', $value) : $value))
+            ->implode("\n\n");
+
         try {
-            Mail::to($lead->email)->send(new LeadAcknowledgement($lead));
+            Mail::raw(
+                "A new website inquiry was received.\n\nForm: {$form->title}\nLead ID: {$lead->id}\n\n{$details}",
+                fn ($message) => $message
+                    ->to(config('mail.lead_to'))
+                    ->subject("New Santorini website inquiry #{$lead->id}")
+            );
+        } catch (\Throwable $exception) {
+            Log::error('Lead notification email could not be sent.', [
+                'lead_id' => $lead->id,
+                'exception' => $exception::class,
+            ]);
+        }
+
+        try {
+            Mail::send(
+                [
+                    'html' => 'emails.lead-acknowledgement',
+                    'text' => 'emails.lead-acknowledgement-text',
+                ],
+                [
+                    'name' => $lead->name,
+                    'formTitle' => $form->title,
+                    'siteUrl' => rtrim(config('app.url'), '/'),
+                    'logoUrl' => rtrim(config('app.url'), '/').'/media/logo-santorini-ink.png',
+                ],
+                fn ($message) => $message
+                    ->to($lead->email)
+                    ->replyTo(config('mail.lead_to'))
+                    ->subject('We received your request | Santorini Residences')
+            );
         } catch (\Throwable $exception) {
             Log::error('Lead acknowledgement email could not be sent.', [
                 'lead_id' => $lead->id,
@@ -118,6 +166,22 @@ class LeadController extends Controller
         return redirect()->to(url()->previous().'#lead-'.$form->key)->with('lead_submitted', $form->key);
     }
 
+    private function validFormToken(Request $request, LeadForm $form): bool
+    {
+        $issued = $request->session()->pull('lead_form_tokens.'.$form->key);
+        $submitted = (string) $request->input('_lead_form_token', '');
+
+        if (! is_array($issued) || ! isset($issued['token'], $issued['issued_at']) || $submitted === '') {
+            return false;
+        }
+
+        $age = now()->timestamp - (int) $issued['issued_at'];
+
+        return hash_equals((string) $issued['token'], $submitted)
+            && $age >= 3
+            && $age <= 7200;
+    }
+
     private function form(string $key): LeadForm
     {
         return LeadForm::where('key', $key)->firstOr(function () use ($key) {
@@ -130,7 +194,7 @@ class LeadController extends Controller
                 'intro' => $preset['default_intro'],
                 'button_label' => $preset['default_button'],
                 'success_title' => 'Thank you.',
-                'success_message' => 'Your request has been received. A member of the Santorini team will be in touch personally.',
+                'success_message' => LeadForm::DEFAULT_SUCCESS_MESSAGE,
                 'fields' => LeadFormTypes::defaultSettings($key),
                 'is_active' => true,
             ]);

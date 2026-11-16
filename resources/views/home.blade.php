@@ -22,27 +22,48 @@
 <script type="application/ld+json">
 {!! json_encode([
     '@context' => 'https://schema.org',
-    '@type' => 'ApartmentComplex',
-    'name' => 'Santorini Residences',
-    '@id' => \App\Support\Seo::url().'#residences',
-    'hasMap' => config('location.map_url'),
-    'description' => 'A landmark residential development on Lantana Road, Westlands, Nairobi. 328 residences, including 1, 2 and 3-bedroom homes and exclusive loft residences.',
-    'url' => \App\Support\Seo::url(),
-    'image' => cms_asset($hero['image']),
-    'address' => [
-        '@type' => 'PostalAddress',
-        'streetAddress' => 'Lantana Road',
-        'addressLocality' => 'Westlands',
-        'addressRegion' => 'Nairobi',
-        'addressCountry' => 'KE',
-    ],
-    'numberOfAccommodationUnits' => 328,
-    'brand' => ['@type' => 'Brand', 'name' => 'LOVE HOMES', 'slogan' => 'Building Homes With Love. Creating a Better Life.'],
-    'developer' => ['@type' => 'Organization', 'name' => 'Olmaa Lands Limited'],
-    'parentOrganization' => [
-        '@type' => 'Organization',
-        'name' => 'Jiangsu Hetian Construction Co., Ltd.',
-        'alternateName' => ['江苏禾田建设有限公司', 'Hetian Construction'],
+    '@graph' => [
+        [
+            '@type' => 'WebSite',
+            '@id' => \App\Support\Seo::url().'#website',
+            'url' => \App\Support\Seo::url(),
+            'name' => 'Santorini Residences',
+            'inLanguage' => 'en-KE',
+            'publisher' => ['@id' => \App\Support\Seo::url().'#developer'],
+        ],
+        [
+            '@type' => 'Organization',
+            '@id' => \App\Support\Seo::url().'#developer',
+            'name' => 'Olmaa Lands Limited',
+            'url' => \App\Support\Seo::url(),
+            'brand' => ['@type' => 'Brand', 'name' => 'LOVE HOMES'],
+            'sameAs' => array_values(array_filter(cms('settings.social', []))),
+            'parentOrganization' => [
+                '@type' => 'Organization',
+                'name' => 'Jiangsu Hetian Construction Co., Ltd.',
+                'alternateName' => ['江苏禾田建设有限公司', 'Hetian Construction'],
+            ],
+        ],
+        [
+            '@type' => 'ApartmentComplex',
+            '@id' => \App\Support\Seo::url().'#residences',
+            'name' => 'Santorini Residences',
+            'url' => \App\Support\Seo::url(),
+            'mainEntityOfPage' => \App\Support\Seo::url(),
+            'hasMap' => config('location.map_url'),
+            'description' => 'Official project website for Santorini Residences, a 328-home residential development on Lantana Road, Westlands, Nairobi, with one, two and three-bedroom apartments and loft residences.',
+            'image' => cms_asset($hero['image']),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => 'Lantana Road',
+                'addressLocality' => 'Westlands',
+                'addressRegion' => 'Nairobi',
+                'addressCountry' => 'KE',
+            ],
+            'numberOfAccommodationUnits' => 328,
+            'brand' => ['@type' => 'Brand', 'name' => 'LOVE HOMES', 'slogan' => 'Building Homes With Love. Creating a Better Life.'],
+            'developer' => ['@id' => \App\Support\Seo::url().'#developer'],
+        ],
     ],
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
@@ -126,7 +147,6 @@
                                 <span class="font-serif text-2xl leading-none text-champagne" aria-hidden="true">×</span>
                                 <span class="text-[0.65rem] leading-snug tracking-[0.12em] uppercase">
                                     <span class="font-semibold">X Space</span>
-                                    <span class="ml-1 block text-[0.58rem] tracking-[0.06em] text-stone">Flexible room in Type A</span>
                                 </span>
                             </p>
                         @endif
@@ -277,7 +297,7 @@
 
     <section id="residences" class="bg-ink text-paper">
         <div class="mx-auto grid max-w-[1600px] gap-16 px-5 py-24 md:px-10 md:py-32 lg:grid-cols-12">
-            <div class="lg:col-span-5" data-reveal>
+            <div class="self-start lg:sticky lg:top-28 lg:col-span-5" data-reveal>
                 <p class="site-kicker text-sand">{{ $overview['kicker'] }}</p>
                 <h2 class="site-display mt-6 text-5xl md:text-6xl">{{ $overview['title'] }}</h2>
                 <p class="mt-6 max-w-md text-base leading-relaxed text-sand">{{ $overview['body'] }}</p>
@@ -347,7 +367,7 @@
         @endif
     </section>
 
-    <section id="ownership" class="aegean relative overflow-hidden text-pearl" aria-labelledby="ownership-title">
+    <section id="ownership" class="aegean relative overflow-x-clip text-pearl" aria-labelledby="ownership-title">
         <div class="mx-auto grid max-w-[1600px] items-start gap-16 px-5 py-28 md:px-10 md:py-40 lg:grid-cols-12">
             <div class="lg:sticky lg:top-32 lg:col-span-5" data-reveal>
                 <div class="flex items-center gap-4">

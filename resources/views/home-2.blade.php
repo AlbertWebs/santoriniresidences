@@ -195,7 +195,7 @@
 
     <section id="residences" class="bg-ink text-paper">
         <div class="mx-auto grid max-w-[1600px] gap-16 px-5 py-24 md:px-10 md:py-32 lg:grid-cols-12">
-            <div class="lg:col-span-5" data-reveal>
+            <div class="self-start lg:sticky lg:top-28 lg:col-span-5" data-reveal>
                 <p class="site-kicker text-sand">Residences</p>
                 <h2 class="site-display mt-6 text-5xl md:text-6xl">Designed around different ways of living.</h2>
                 <p class="mt-6 max-w-md text-base leading-relaxed text-sand">A curated collection of one, two, and three-bedroom homes, with a limited series of loft residences on the 19th floor.</p>
@@ -273,7 +273,7 @@
 
     <section class="bg-dusk text-paper">
         <div class="mx-auto grid max-w-[1600px] items-start gap-16 px-5 py-24 md:px-10 md:py-32 lg:grid-cols-12">
-            <div class="lg:col-span-5" data-reveal>
+            <div class="self-start lg:sticky lg:top-32 lg:col-span-5" data-reveal>
                 <p class="site-kicker text-sand">Ownership</p>
                 <h2 class="site-display mt-6 text-5xl md:text-6xl">A premium address. A diverse residential product.</h2>
                 <p class="mt-6 max-w-md leading-relaxed text-sand">Santorini is designed to appeal to both homeowners and property investors.</p>

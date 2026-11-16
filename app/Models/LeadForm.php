@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeadForm extends Model
 {
+    public const DEFAULT_SUCCESS_MESSAGE = 'Your request is being processed. Someone from the Santorini team will get back to you soon.';
+
     protected $fillable = [
         'key', 'type', 'title', 'intro', 'button_label',
         'success_title', 'success_message', 'fields', 'is_active',

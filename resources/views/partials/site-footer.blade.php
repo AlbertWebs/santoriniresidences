@@ -2,7 +2,9 @@
     $brand = cms('settings.brand');
     $contact = cms('settings.contact');
     $socialLinks = cms('settings.social');
-    $publicTestimonials = \App\Support\TestimonialContent::published();
+    $publicPages = \App\Support\Seo::publicPages();
+    $explorePages = array_filter($publicPages, fn ($page) => $page['group'] === 'explore' || $page['group'] === 'home');
+    $contactPages = array_filter($publicPages, fn ($page) => $page['group'] === 'contact');
     $whatsapp = preg_replace('/\D+/', '', (string) $contact['whatsapp']);
     $socialIcons = [
         'instagram' => ['Instagram', '<rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor"/>'],
@@ -51,25 +53,20 @@
 
         <div class="grid gap-12 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-3 lg:gap-10">
             <div>
-                <p class="site-kicker footer-title">Visit</p>
+                <p class="site-kicker footer-title">Explore</p>
                 <ul class="mt-7 space-y-3.5 text-sm">
-                    <li><a class="footer-link link-line" href="{{ route('residences') }}">Residences</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('gallery') }}">Gallery</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('about') }}">LOVE HOMES</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('insights') }}">Insights</a></li>
+                    @foreach ($explorePages as $page)
+                        <li><a class="footer-link link-line" href="{{ route($page['route']) }}">{{ $page['label'] }}</a></li>
+                    @endforeach
                     <li><a class="footer-link link-line" href="{{ route('privacy') }}">Privacy policy</a></li>
-                    @if ($publicTestimonials)<li><a class="footer-link link-line" href="{{ route('testimonials') }}">Testimonials</a></li>@endif
-                    <li><a class="footer-link link-line" href="{{ route('home') }}#location">Location</a></li>
                 </ul>
             </div>
             <div>
                 <p class="site-kicker footer-title">Enquire</p>
                 <ul class="mt-7 space-y-3.5 text-sm">
-                    <li><a class="footer-link link-line" href="{{ route('visit.book') }}">Book a site visit</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('enquire', ['interest' => 'private-viewing']) }}">Private viewing</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('enquire', ['interest' => 'price-list']) }}">Price list</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('enquire', ['interest' => 'investment-pack']) }}">Investment pack</a></li>
-                    <li><a class="footer-link link-line" href="{{ route('enquire', ['interest' => 'consultation']) }}">Private consultation</a></li>
+                    @foreach ($contactPages as $page)
+                        <li><a class="footer-link link-line" href="{{ route($page['route']) }}">{{ $page['label'] }}</a></li>
+                    @endforeach
                 </ul>
             </div>
             <div>

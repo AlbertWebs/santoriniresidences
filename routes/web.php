@@ -6,6 +6,7 @@ use App\Http\Controllers\LeadController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
+Route::view('/project-facts', 'project-facts')->name('project-facts');
 Route::get('/sitemap.xml', fn () => response()->view('sitemap')->header('Content-Type', 'application/xml'));
 Route::get('/robots.txt', fn () => response(
     "User-agent: *\nAllow: /\n".(\App\Support\Seo::indexable() ? "Sitemap: ".\App\Support\Seo::url('sitemap.xml')."\n" : ''),

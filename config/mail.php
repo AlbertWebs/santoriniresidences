@@ -2,6 +2,8 @@
 
 return [
 
+    'lead_to' => env('LEAD_NOTIFICATION_EMAIL', 'info@santoriniresidences.com'),
+
     /*
     |--------------------------------------------------------------------------
     | Default Mailer
