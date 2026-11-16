@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
                 'intro' => $preset['default_intro'],
                 'button_label' => $preset['default_button'],
                 'success_title' => 'Thank you.',
-                'success_message' => 'Your request has been received. A member of the Santorini team will be in touch personally.',
+                'success_message' => LeadForm::DEFAULT_SUCCESS_MESSAGE,
                 'fields' => LeadFormTypes::defaultSettings($type),
                 'is_active' => true,
             ]);
